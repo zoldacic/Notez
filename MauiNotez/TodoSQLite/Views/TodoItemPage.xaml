@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TodoSQLite.Views.TodoItemPage"
+             Title="{Binding Name}"
+             xmlns:models="clr-namespace:TodoSQLite.Models" 
+             xmlns:dxe="clr-namespace:DevExpress.Maui.Editors;assembly=DevExpress.Maui.Editors"
+             x:DataType="models:TodoItem">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="10"
+                             VerticalOptions="StartAndExpand">
+            <Label Text="Date" />
+            <DatePicker Date="{Binding AssignedDate}" />
+            <Label Text="Name" />
+            <Entry Text="{Binding Name}" />
+            <Label Text="Tags" />
+            <dxe:FilterChipGroup x:Name="filterChipGroup"
+                     Margin="15"
+                     BackgroundColor="Transparent"
+                     IsMultiline="False">
+                <dxe:Chip Icon="incoming" 
+              Text="Incoming" 
+              BackgroundColor="#3010E010" 
+              SelectedBackgroundColor="#8010E010" 
+              IsCheckIconVisible="True"/>
+                <dxe:Chip Icon="outgoing" 
+              Text="Outgoing" 
+              BackgroundColor="#30FF8000" 
+              SelectedBackgroundColor="#80FF8000" 
+              IsCheckIconVisible="True"/>
+                <dxe:Chip Icon="missed" 
+              Text="Missed" 
+              BackgroundColor="#30F01010" 
+              SelectedBackgroundColor="#80F01010" 
+              IsCheckIconVisible="True"/>
+            </dxe:FilterChipGroup>
+            <Label Text="Notes" />
+            <Entry Text="{Binding Notes}" />
+            <Label Text="Done" />
+            <Switch IsToggled="{Binding Done}" />
+            <Button Text="Save"
+                    Clicked="OnSaveClicked" />
+            <Button Text="Delete"
+                    Clicked="OnDeleteClicked" />
+            <Button Text="Cancel"
+                    Clicked="OnCancelClicked" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
