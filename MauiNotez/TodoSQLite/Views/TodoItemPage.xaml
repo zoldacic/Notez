@@ -11,15 +11,21 @@
                              Spacing="10"
                              VerticalOptions="StartAndExpand">
             <Label Text="Date" />
-            <DatePicker Date="{Binding AssignedDate}" />
+            <DatePicker Date="{Binding AssignedDate}" DateSelected="DatePicker_DateSelected" />
             <Label Text="Name" />
             <Entry Text="{Binding Name}" />
             <Label Text="Tags" />
-            <dxe:FilterChipGroup x:Name="filterChipGroup"
+            <dxe:InputChipGroup x:Name="tags"
+                    ItemsSource="{Binding Tags}"
                      Margin="15"
-                     BackgroundColor="Transparent"
-                     IsMultiline="False">
-                <dxe:Chip Icon="incoming" 
+                    DisplayMember="Text"                    
+                    ChipRemoveIcon="Image"
+                    ChipRemoveIconColor="Blue"
+                    ChipIsIconVisible="true"          
+                    Completed="tags_Completed"                               
+                    ChipRemoveIconClicked="tags_ChipRemoveIconClicked">
+                
+                <!--<dxe:Chip Icon="incoming" 
               Text="Incoming" 
               BackgroundColor="#3010E010" 
               SelectedBackgroundColor="#8010E010" 
@@ -33,8 +39,8 @@
               Text="Missed" 
               BackgroundColor="#30F01010" 
               SelectedBackgroundColor="#80F01010" 
-              IsCheckIconVisible="True"/>
-            </dxe:FilterChipGroup>
+              IsCheckIconVisible="True"/>-->
+            </dxe:InputChipGroup>
             <Label Text="Notes" />
             <Entry Text="{Binding Notes}" />
             <Label Text="Done" />

@@ -6,20 +6,22 @@ namespace TodoSQLite.Views;
 
 public partial class TodoListPage : ContentPage
 {
-    TodoItemDatabase database;
+    private TodoItemRepository _itemRepository;
+    
     public ObservableCollection<TodoItem> Items { get; set; } = new();
-    public TodoListPage(TodoItemDatabase todoItemDatabase)
+
+    public TodoListPage(TodoItemRepository itemRepository)
 	{
 		InitializeComponent();
-        database = todoItemDatabase;
+        
+        _itemRepository = itemRepository;
         BindingContext = this;
     }
-
 
     protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        var items = await database.GetItemsAsync();
+        var items = await _itemRepository.GetItemsAsync();
         MainThread.BeginInvokeOnMainThread(() =>
         {
             Items.Clear();
