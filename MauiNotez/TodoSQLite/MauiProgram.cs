@@ -20,7 +20,7 @@ public static class MauiProgram
 		builder.Services.AddSingleton<TodoListPage>();
 		builder.Services.AddTransient<TodoItemPage>();
 
-		builder.Services.AddSingleton<TodoItemRepopsitory>();
+		builder.Services.AddSingleton<TodoItemRepository>();
 
 		return builder.Build();
 	}
