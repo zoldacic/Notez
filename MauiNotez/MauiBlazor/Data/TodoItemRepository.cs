@@ -34,7 +34,7 @@ public class TodoItemRepository
     }
 
     public async Task<int> SaveItemAsync(TodoItem item)
-    {
+    { 
         if (item.ID != 0)
         {
             await Repository.Database.UpdateAsync(item);

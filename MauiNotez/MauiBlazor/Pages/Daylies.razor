@@ -4,7 +4,9 @@
 @using TodoSQLite.Data;
 @using TodoSQLite.Models;
 
-<MudDataGrid Items="@employees" Filterable="false" SortMode="@SortMode.None" Groupable="false">
+@inject IDialogService DialogService
+
+@*<MudDataGrid Items="@employees" Filterable="false" SortMode="@SortMode.None" Groupable="false">
     <Columns>
         <PropertyColumn Property="x => x.Name" />
         <PropertyColumn Property="x => x.Position" />
@@ -20,20 +22,38 @@
             </CellTemplate>
         </TemplateColumn>
     </Columns>
-</MudDataGrid>
+</MudDataGrid>*@
 
-<MudDataGrid Items="@items" Filterable="false" SortMode="@SortMode.None" Groupable="false">
-    <Columns>
-        <PropertyColumn Property="x => x.Name" />
-        <PropertyColumn Property="x => x.Notes" />
-    </Columns>
-</MudDataGrid>
+<MudStack>
+    <MudDataGrid @ref="mudGrid" Items="@items" Filterable="false" SortMode="@SortMode.None" Groupable="false" ReadOnly=false EditMode="DataGridEditMode.Form">
+        <Columns>
+            <PropertyColumn Property="x => x.Name" />
+            <PropertyColumn Property="x => x.Notes" />
+            <TemplateColumn CellClass="d-flex justify-end">
+                <CellTemplate>
+                    <MudStack Row>
+                        <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary" @onclick="@(x => OpenDialog(x))">Edit</MudButton>
+                    </MudStack>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+    </MudDataGrid>
+
+    <MudStack AlignItems="AlignItems.End">
+        <MudButton @onclick="OpenDialog" Variant="Variant.Filled" Color="Color.Primary">
+            Add item
+        </MudButton>
+    </MudStack>
+</MudStack>
+
 
 @code {
     public record Employee(string Name, string Position, int YearsEmployed, int Salary, int Rating);
 
     public IEnumerable<Employee> employees;
     public IEnumerable<TodoItem> items;
+
+    private MudDataGrid<TodoItem> mudGrid;
 
     protected override async Task OnInitializedAsync()
     {
@@ -61,5 +81,14 @@
             new Employee("Ira", "Developer", 4, 92_000, 3),
             new Employee("John", "IT Director", 17, 229_000, 4),
         };
+    }
+
+    private void OpenDialog(MouseEventArgs args)
+    {
+        var item = mudGrid.SelectedItem;
+
+        var parameters = new DialogParameters { ["item"] = item };
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        DialogService.Show<AddItem>("Add item", parameters, options);
     }
 }

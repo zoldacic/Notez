@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31611.283
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TodoSQLite", "TodoSQLite\TodoSQLite.csproj", "{A243E865-5275-42A6-8C15-50CEAB4C0456}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MauiBlazor", "MauiBlazor\MauiBlazor.csproj", "{DDDC1E64-8855-4DDB-9DCC-698CBA968F2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MauiBlazor", "MauiBlazor\MauiBlazor.csproj", "{DDDC1E64-8855-4DDB-9DCC-698CBA968F2B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
