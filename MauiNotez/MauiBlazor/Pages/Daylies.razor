@@ -32,7 +32,7 @@
             <TemplateColumn CellClass="d-flex justify-end">
                 <CellTemplate>
                     <MudStack Row>
-                        <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary" @onclick="@(x => OpenDialog(x))">Edit</MudButton>
+                        <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary" @onclick="@(x => OpenDialog(x, context.Item))">Edit</MudButton>
                     </MudStack>
                 </CellTemplate>
             </TemplateColumn>
@@ -40,7 +40,7 @@
     </MudDataGrid>
 
     <MudStack AlignItems="AlignItems.End">
-        <MudButton @onclick="OpenDialog" Variant="Variant.Filled" Color="Color.Primary">
+        <MudButton @onclick="x => OpenDialog(x, null)" Variant="Variant.Filled" Color="Color.Primary">
             Add item
         </MudButton>
     </MudStack>
@@ -83,11 +83,15 @@
         };
     }
 
-    private void OpenDialog(MouseEventArgs args)
+    private void OpenDialog(MouseEventArgs args, TodoItem item)
     {
-        var item = mudGrid.SelectedItem;
+        var parameters = new DialogParameters { };
+        
+        if (item != null)
+        {
+            parameters = new DialogParameters { ["item"] = item };
+        }
 
-        var parameters = new DialogParameters { ["item"] = item };
         var options = new DialogOptions { CloseOnEscapeKey = true };
         DialogService.Show<AddItem>("Add item", parameters, options);
     }

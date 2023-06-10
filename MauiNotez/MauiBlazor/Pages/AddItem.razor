@@ -2,9 +2,9 @@
 @using TodoSQLite.Models;
 <MudDialog>
     <DialogContent>
-        <MudInputLabel>Name</MudInputLabel> <MudTextField T="string" Value="@item.Name"></MudTextField>       
-        <MudInputLabel>Notes</MudInputLabel> <MudTextField T="string" Value="@item.Notes" Lines="5"></MudTextField>
-        <MudInputLabel>Assigned date</MudInputLabel> <MudDatePicker PickerVariant="PickerVariant.Static" Date="@item.AssignedDate"></MudDatePicker>
+        <MudInputLabel>Name</MudInputLabel> <MudTextField @bind-Value="@item.Name"></MudTextField>
+        <MudInputLabel>Notes</MudInputLabel> <MudTextField @bind-Value="@item.Notes" Lines="5"></MudTextField>
+        <MudInputLabel>Assigned date</MudInputLabel> <MudDatePicker PickerVariant="PickerVariant.Static" @bind-Value="@item.AssignedDate"></MudDatePicker>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
@@ -20,6 +20,7 @@
     async Task Submit() { 
 
         var repo = new TodoItemRepository();
+
         await repo.SaveItemAsync(item);
 
         MudDialog.Close(DialogResult.Ok(true));
