@@ -1,0 +1,28 @@
+﻿@using TodoSQLite.Data;
+@using TodoSQLite.Models;
+<MudDialog>
+    <DialogContent>
+        Do you want to delete item with name "@item.Name"?
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public TodoItem item { get; set; } = new TodoItem();
+
+    async Task Submit() { 
+
+        var repo = new TodoItemRepository();
+
+        await repo.DeleteItemAsync(item);
+
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+    
+    void Cancel() => MudDialog.Cancel();
+}

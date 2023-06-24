@@ -6,24 +6,6 @@
 
 @inject IDialogService DialogService
 
-@*<MudDataGrid Items="@employees" Filterable="false" SortMode="@SortMode.None" Groupable="false">
-    <Columns>
-        <PropertyColumn Property="x => x.Name" />
-        <PropertyColumn Property="x => x.Position" />
-        <PropertyColumn Property="x => x.YearsEmployed" Title="Years Employed" />
-        <PropertyColumn Property="x => x.Salary" Format="C" />
-        <PropertyColumn Property="x => x.Salary * x.YearsEmployed" Title="Total Earned" Format="C" />
-        <TemplateColumn CellClass="d-flex justify-end">
-            <CellTemplate>
-                <MudStack Row>
-                    <MudRating Size="@Size.Small" SelectedValue="@context.Item.Rating" />
-                    <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary">Hire</MudButton>
-                </MudStack>
-            </CellTemplate>
-        </TemplateColumn>
-    </Columns>
-</MudDataGrid>*@
-
 <MudStack>
     <MudDataGrid @ref="mudGrid" Items="@items" Filterable="false" SortMode="@SortMode.None" Groupable="false" ReadOnly=false EditMode="DataGridEditMode.Form">
         <Columns>
@@ -32,7 +14,8 @@
             <TemplateColumn CellClass="d-flex justify-end">
                 <CellTemplate>
                     <MudStack Row>
-                        <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary" @onclick="@(x => OpenDialog(x, context.Item))">Edit</MudButton>
+                        <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary" @onclick="@(x => OpenEditDialogAsync(x, context.Item))">Edit</MudButton>
+                        <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary" @onclick="@(x => OpenDeleteDialoGAsync(x, context.Item))">Delete</MudButton>
                     </MudStack>
                 </CellTemplate>
             </TemplateColumn>
@@ -40,22 +23,24 @@
     </MudDataGrid>
 
     <MudStack AlignItems="AlignItems.End">
-        <MudButton @onclick="x => OpenDialog(x, null)" Variant="Variant.Filled" Color="Color.Primary">
-            Add item
+        <MudButton @onclick="x => OpenEditDialogAsync(x, null)" Variant="Variant.Filled" Color="Color.Primary">
+            Add
         </MudButton>
     </MudStack>
 </MudStack>
 
-
 @code {
-    public record Employee(string Name, string Position, int YearsEmployed, int Salary, int Rating);
 
-    public IEnumerable<Employee> employees;
     public IEnumerable<TodoItem> items;
 
     private MudDataGrid<TodoItem> mudGrid;
 
     protected override async Task OnInitializedAsync()
+    {
+        await LoadItems();
+    }
+
+    protected async Task LoadItems()
     {
         var repo = new TodoItemRepository();
         await repo.Init();
@@ -64,35 +49,42 @@
         if (!items.Any())
         {
             var item = new TodoItem()
-            {
-                Name = "Example Item Name",
-                Notes = "Example Item Notes",
-                AssignedDate = DateTime.Now
-            };
+                {
+                    Name = "Example Item Name",
+                    Notes = "Example Item Notes",
+                    AssignedDate = DateTime.Now
+                };
 
             await repo.SaveItemAsync(item);
             items = await repo.GetItemsAsync();
         }
-
-        employees = new List<Employee>
-        {
-            new Employee("Sam", "CPA", 23, 87_000, 4),
-            new Employee("Alicia", "Product Manager", 11, 143_000, 5),
-            new Employee("Ira", "Developer", 4, 92_000, 3),
-            new Employee("John", "IT Director", 17, 229_000, 4),
-        };
     }
 
-    private void OpenDialog(MouseEventArgs args, TodoItem item)
+    private async Task OpenEditDialogAsync(MouseEventArgs args, TodoItem item)
     {
         var parameters = new DialogParameters { };
-        
+
         if (item != null)
         {
             parameters = new DialogParameters { ["item"] = item };
         }
 
         var options = new DialogOptions { CloseOnEscapeKey = true };
-        DialogService.Show<AddItem>("Add item", parameters, options);
+        await DialogService.Show<EditItem>("Add item", parameters, options).Result;
+        await LoadItems();
+    }
+
+    private async Task OpenDeleteDialoGAsync(MouseEventArgs args, TodoItem item)
+    {
+        var parameters = new DialogParameters { };
+
+        if (item != null)
+        {
+            parameters = new DialogParameters { ["item"] = item };
+        }
+
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        await DialogService.Show<DeleteItem>("Add item", parameters, options).Result;
+        await LoadItems();
     }
 }

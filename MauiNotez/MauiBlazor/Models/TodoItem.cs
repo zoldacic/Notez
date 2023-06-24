@@ -1,5 +1,4 @@
 ﻿using SQLite;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 namespace TodoSQLite.Models;
