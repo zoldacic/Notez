@@ -1,16 +1,16 @@
-@page "/daylies"
+﻿@page "/tags"
 
 @using System.Net.Http.Json
+@using MauiBlazor.Data;
 @using TodoSQLite.Data;
 @using TodoSQLite.Models;
 
 @inject IDialogService DialogService
 
 <MudStack>
-    <MudDataGrid @ref="mudGrid" Items="@items" Filterable="false" SortMode="@SortMode.None" Groupable="false" ReadOnly=false EditMode="DataGridEditMode.Form">
+    <MudDataGrid @ref="mudGrid" Items="@tags" Filterable="false" SortMode="@SortMode.None" Groupable="false" ReadOnly=false EditMode="DataGridEditMode.Form">
         <Columns>
-            <PropertyColumn Property="x => x.Name" />
-            <PropertyColumn Property="x => x.Notes" />
+            <PropertyColumn Property="x => x.Text" />
             <TemplateColumn CellClass="d-flex justify-end">
                 <CellTemplate>
                     <MudStack Row>
@@ -31,47 +31,48 @@
 
 @code {
 
-    public IEnumerable<TodoItem> items;
+    public IEnumerable<Tag> tags;
 
-    private MudDataGrid<TodoItem> mudGrid;
+    private MudDataGrid<Tag> mudGrid;
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadItems();
+        await LoadTagsAsync();
     }
 
-    protected async Task LoadItems()
+    protected async Task LoadTagsAsync()
     {
-        var repo = new TodoItemRepository();
+        var repo = new TagRepository();
+
         await repo.Init();
-        items = await repo.GetItemsAsync();
+        tags = await repo.GetTagsAsync();
     }
 
-    private async Task OpenEditDialogAsync(MouseEventArgs args, TodoItem item)
+    private async Task OpenEditDialogAsync(MouseEventArgs args, Tag tag)
     {
         var parameters = new DialogParameters { };
 
-        if (item != null)
+        if (tag != null)
         {
-            parameters = new DialogParameters { ["item"] = item };
+            parameters = new DialogParameters { ["tag"] = tag };
         }
 
         var options = new DialogOptions { CloseOnEscapeKey = true };
-        await DialogService.Show<EditItem>("Add item", parameters, options).Result;
-        await LoadItems();
+        await DialogService.Show<EditTag>("Add tag", parameters, options).Result;
+        await LoadTagsAsync();
     }
 
-    private async Task OpenDeleteDialoGAsync(MouseEventArgs args, TodoItem item)
+    private async Task OpenDeleteDialoGAsync(MouseEventArgs args, Tag tag)
     {
         var parameters = new DialogParameters { };
 
-        if (item != null)
+        if (tag != null)
         {
-            parameters = new DialogParameters { ["item"] = item };
+            parameters = new DialogParameters { ["tag"] = tag };
         }
 
         var options = new DialogOptions { CloseOnEscapeKey = true };
-        await DialogService.Show<DeleteItem>("Delete item", parameters, options).Result;
-        await LoadItems();
+        await DialogService.Show<DeleteTag>("Delete tag", parameters, options).Result;
+        await LoadTagsAsync();
     }
 }

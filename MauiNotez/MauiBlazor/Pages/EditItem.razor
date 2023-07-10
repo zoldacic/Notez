@@ -1,10 +1,23 @@
-﻿@using TodoSQLite.Data;
+﻿@using MauiBlazor.Data;
+@using TodoSQLite.Data;
 @using TodoSQLite.Models;
 <MudDialog>
     <DialogContent>
-        <MudInputLabel>Name</MudInputLabel> <MudTextField @bind-Value="@item.Name"></MudTextField>
-        <MudInputLabel>Notes</MudInputLabel> <MudTextField @bind-Value="@item.Notes" Lines="5"></MudTextField>
-        <MudInputLabel>Assigned date</MudInputLabel> <MudDatePicker PickerVariant="PickerVariant.Static" @bind-Value="@item.AssignedDate"></MudDatePicker>
+        <MudTextField Variant="Variant.Outlined" Margin="Margin.Dense" Label="Name" @bind-Value="@item.Name"></MudTextField>
+
+        <MudChipSet Label="Tags" Variant="Variant.Outlined" Margin="Margin.Dense" @bind-SelectedChips="selected" MultiSelection="true" Filter="true">
+            @if (tags != null)
+            {
+                @foreach (var tag in tags)
+                {
+                    <MudChip @ref="mudChip" Text="@tag.Text"></MudChip>
+                }
+            }         
+        </MudChipSet>
+
+        <MudTextField Variant="Variant.Outlined" Margin="Margin.Dense" Label="Notes" @bind-Value="@item.Notes" Lines="3"></MudTextField>
+
+        <MudDatePicker Variant="Variant.Outlined" Margin="Margin.Dense" Label="Assigned date" @bind-Value="@item.AssignedDate"></MudDatePicker>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
@@ -13,15 +26,64 @@
 </MudDialog>
 
 @code {
+    List<Tag> tags;
+
+    MudChip[] selected;
+
+    List<MudChip> mudChips = new List<MudChip>();
+    MudChip mudChip { set { mudChips.Add(value); } }
+
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
     [Parameter] public TodoItem item { get; set; } = new TodoItem();
 
-    async Task Submit() { 
+    protected override async Task OnInitializedAsync()
+    {
+
+        var tagRepo = new TagRepository();
+        tags = await tagRepo.GetTagsAsync();
+
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var itemTagsRepo = new ItemTagRepository();
+            var itemTags = await itemTagsRepo.GetItemTagsForItemAsync(item.ID);
+
+            var selectedMudChips = new List<MudChip>();
+            foreach (var itemTag in itemTags)
+            {
+                var tag = tags.FirstOrDefault(t => t.ID == itemTag.TagId);
+
+                if (tag is null)
+                {
+                    // This ItemTag should not exist - Delete it
+                    await itemTagsRepo.DeleteItemTagAsync(itemTag);
+                }
+                else
+                {
+                    var mudChip = mudChips.FirstOrDefault(m => m.Text == tag.Text);
+                    selectedMudChips.Add(mudChip);
+                }
+            }
+
+            selected = selectedMudChips.ToArray();
+            StateHasChanged();
+        }
+
+        await base.OnAfterRenderAsync(firstRender);        
+    }
+
+
+    async Task Submit() {
+
+        var selectedTags = tags.Where(t => selected.Any(s => s.Text == t.Text)).ToList();
 
         var repo = new TodoItemRepository();
-
-        await repo.SaveItemAsync(item);
+        await repo.SaveItemAsync(item, selectedTags);
 
         MudDialog.Close(DialogResult.Ok(true));
     }

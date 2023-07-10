@@ -1,0 +1,33 @@
+﻿@using MauiBlazor.Data;
+@using TodoSQLite.Data;
+@using TodoSQLite.Models;
+<MudDialog>
+    <DialogContent>
+        <MudTextField Variant="Variant.Outlined" Margin="Margin.Dense" Label="Text" @bind-Value="@tag.Text"></MudTextField>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    List<Tag> tags;
+
+    MudChip[] selected;
+
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public Tag tag { get; set; } = new Tag();
+
+    async Task Submit() { 
+
+        var repo = new TagRepository();
+
+        await repo.SaveTagAsync(tag);
+
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+    
+    void Cancel() => MudDialog.Cancel();
+}

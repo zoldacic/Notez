@@ -16,6 +16,10 @@ public static class Repository
 
         await Database.CreateTableAsync<TodoItem>();
         await Database.CreateTableAsync<Tag>();
-        await Database.CreateTableAsync<ItemTag>();
+
+        try
+        {
+            await Database.CreateTableAsync<ItemTag>();
+        } catch (Exception ex) { }
     }
 }

@@ -8,7 +8,7 @@ public class Tag
     [PrimaryKey, AutoIncrement]
     public int ID { get; set; }
     public ImageSource Image { get; }
-    public string Text { get; }
+    public string Text { get; set;  }
     
     public Tag() {}
     
@@ -33,5 +33,5 @@ public class TodoItem
     public string Notes { get; set; }
     public bool Done { get; set; }
 
-    public BindingList<Tag> Tags { get; } = new BindingList<Tag>() { };
+    //public IEnumerable<Tag> Tags { get; set; } = new List<Tag>() { };
 }

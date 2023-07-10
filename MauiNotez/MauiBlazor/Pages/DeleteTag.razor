@@ -1,0 +1,29 @@
+﻿@using MauiBlazor.Data;
+@using TodoSQLite.Data;
+@using TodoSQLite.Models;
+<MudDialog>
+    <DialogContent>
+        Do you want to delete tag with text "@tag.Text"?
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public Tag tag { get; set; } = new Tag();
+
+    async Task Submit() { 
+
+        var repo = new TagRepository();
+
+        await repo.DeleteTagAsync(tag);
+
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+    
+    void Cancel() => MudDialog.Cancel();
+}

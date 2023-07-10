@@ -1,15 +1,17 @@
 ﻿using TodoSQLite.Models;
+using static MudBlazor.CategoryTypes;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MauiBlazor.Data;
 
 public class TagRepository
 {
-    public TagRepository()
+    public async Task Init()
     {
-        Repository.InitAsync().GetAwaiter().GetResult();
+        await Repository.InitAsync();
     }
 
-    public async Task<List<Tag>> GetTags()
+    public async Task<List<Tag>> GetTagsAsync()
     {
         return await Repository.Database.Table<Tag>().ToListAsync();
     }
@@ -18,5 +20,29 @@ public class TagRepository
     {
         var tags = await Repository.Database.Table<Tag>().Where(t => t.Text == text).ToListAsync();
         return tags.FirstOrDefault();
+    }
+
+    public async Task SaveTagAsync(Tag tag)
+    {
+        var otherTagWithSameText = await GetTagWithTextAsync(tag.Text);
+        
+        if (otherTagWithSameText != null && otherTagWithSameText.ID != tag.ID)
+        {
+            throw new Exception($"Tag with text {tag.Text} already exists");
+        }
+
+        if (tag.ID != 0)
+        {
+            await Repository.Database.UpdateAsync(tag);
+        }
+        else
+        {
+            await Repository.Database.InsertAsync(tag);
+        }
+    }
+
+    public async Task<int> DeleteTagAsync(Tag tag)
+    {
+        return await Repository.Database.DeleteAsync(tag);
     }
 }
