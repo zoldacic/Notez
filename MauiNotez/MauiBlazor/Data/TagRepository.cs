@@ -13,11 +13,13 @@ public class TagRepository
 
     public async Task<List<Tag>> GetTagsAsync()
     {
+        await Init();
         return await Repository.Database.Table<Tag>().ToListAsync();
     }
 
     public async Task<Tag> GetTagWithTextAsync(string text)
     {
+        await Init();
         var tags = await Repository.Database.Table<Tag>().Where(t => t.Text == text).ToListAsync();
         return tags.FirstOrDefault();
     }

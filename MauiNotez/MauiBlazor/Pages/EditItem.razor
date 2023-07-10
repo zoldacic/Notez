@@ -18,6 +18,8 @@
         <MudTextField Variant="Variant.Outlined" Margin="Margin.Dense" Label="Notes" @bind-Value="@item.Notes" Lines="3"></MudTextField>
 
         <MudDatePicker Variant="Variant.Outlined" Margin="Margin.Dense" Label="Assigned date" @bind-Value="@item.AssignedDate"></MudDatePicker>
+
+        <MudTextField Variant="Variant.Outlined" Margin="Margin.Dense" Label="Name" @bind-Value="@item.TransactionAmount"></MudTextField>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>

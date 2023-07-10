@@ -43,8 +43,6 @@
     protected async Task LoadTagsAsync()
     {
         var repo = new TagRepository();
-
-        await repo.Init();
         tags = await repo.GetTagsAsync();
     }
 
