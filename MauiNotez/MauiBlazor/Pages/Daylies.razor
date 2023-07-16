@@ -2,12 +2,44 @@
 
 @using System.Net.Http.Json
 @using MauiBlazor.Data;
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Popups
 @using TodoSQLite.Data;
 @using TodoSQLite.Models;
+@using Syncfusion.Blazor.Grids
 
-@inject IDialogService DialogService
+<SfCard>
+<SfGrid DataSource="@items" AllowTextWrap="true" AllowPaging="true">
+    <GridColumns>
+        <GridColumn Field="@nameof(TodoItem.Name)" HeaderText="Name" Width="190"></GridColumn>
+        <GridColumn Field="@nameof(TodoItem.Notes)" HeaderText="Notes" Width="340"></GridColumn>
+        <GridColumn HeaderText="Edit">
+            <Template>
+                @{
+                    var item = (context as TodoItem);
+                    <div class="image">
+                        <SfButton IconCss="e-icons e-chevron-down-fill" OnClick="@(x => OpenEditDialogAsync(x, item))"></SfButton>
+                        <SfButton IconCss="e-icons e-chevron-down-fill" OnClick="@(x => OpenDeleteDialogAsync(x, item))"></SfButton>
+                    </div>
+                }
+            </Template>
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
+</SfCard>
 
-<MudStack>
+@if (hasSelectedItem)
+{
+    <EditItem 
+        @ref="editDialog" 
+        item="selectedItem" 
+        OnItemSaved="@(() => OnEditDialogSubmit())" 
+        OnItemSaveCancelled="@(() => OnEditDialogCancel())">
+    </EditItem>
+}
+
+@* <MudStack>
     <MudDataGrid @ref="mudGrid" Items="@items" Filterable="false" SortMode="@SortMode.None" Groupable="false" ReadOnly=false EditMode="DataGridEditMode.Form">
         <Columns>
             <PropertyColumn Property="x => x.Name" Title="Name" />
@@ -28,13 +60,20 @@
             Add
         </MudButton>
     </MudStack>
-</MudStack>
+</MudStack> *@
 
 @code {
+    private bool hasSelectedItem = false;
+    public TodoItem selectedItem;
+
 
     public IEnumerable<TodoItem> items;
 
-    private MudDataGrid<TodoItem> mudGrid;
+    // private bool isEditDialogVisible = false;
+
+    // private MudDataGrid<TodoItem> mudGrid;
+
+    private EditItem editDialog;
 
     private List<Tag> allTags;
     private List<ItemTag> allItemTags;
@@ -57,41 +96,48 @@
         allItemTags = await itemTagRepo.GetItemTagsAsync();
     }
 
-    protected string GetTags(int itemId)
-    {
-        var itemTags = allItemTags.Where(it => it.ItemId == itemId).ToList();
-        var tagIds = itemTags.Select(it => it.TagId).ToList();
-        var tags = allTags.Where(t => tagIds.Any(ti => ti == t.ID)).Select(t => t.Text).ToList();
+    // protected string GetTags(int itemId)
+    // {
+    //     var itemTags = allItemTags.Where(it => it.ItemId == itemId).ToList();
+    //     var tagIds = itemTags.Select(it => it.TagId).ToList();
+    //     var tags = allTags.Where(t => tagIds.Any(ti => ti == t.ID)).Select(t => t.Text).ToList();
 
-        var tagString = string.Join(", ", tags);
-        return tagString;
-    }
+    //     var tagString = string.Join(", ", tags);
+    //     return tagString;
+    // }
 
     private async Task OpenEditDialogAsync(MouseEventArgs args, TodoItem item)
     {
-        var parameters = new DialogParameters { };
+        selectedItem = item;
+        hasSelectedItem = true;
+        // var parameters = new DialogParameters { };
 
-        if (item != null)
-        {
-            parameters = new DialogParameters { ["item"] = item };
-        }
+        // if (item != null)
+        // {
+        //     parameters = new DialogParameters { ["item"] = item };
+        // }
 
-        var options = new DialogOptions { CloseOnEscapeKey = true };
-        await DialogService.Show<EditItem>("Add item", parameters, options).Result;
+        // var options = new DialogOptions { CloseOnEscapeKey = true };
+        //await DialogService.Show<EditItem>("Add item", parameters, options).Result;,
+        // editDialog.OpenDialog(item);
         await LoadItems();
     }
 
-    private async Task OpenDeleteDialoGAsync(MouseEventArgs args, TodoItem item)
+    private async Task OpenDeleteDialogAsync(MouseEventArgs args, TodoItem item)
     {
-        var parameters = new DialogParameters { };
-
-        if (item != null)
-        {
-            parameters = new DialogParameters { ["item"] = item };
-        }
-
-        var options = new DialogOptions { CloseOnEscapeKey = true };
-        await DialogService.Show<DeleteItem>("Delete item", parameters, options).Result;
+        hasSelectedItem = true;
+        // var options = new DialogOptions { CloseOnEscapeKey = true };
+        // await DialogService.Show<DeleteItem>("Delete item", parameters, options).Result;
         await LoadItems();
+    }
+
+    private void OnEditDialogSubmit()
+    {
+        hasSelectedItem = false;
+    }
+
+    private void OnEditDialogCancel()
+    {
+        hasSelectedItem = false;
     }
 }

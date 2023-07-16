@@ -1,32 +1,23 @@
 ﻿using MauiBlazor.Data;
-using Microsoft.Extensions.Logging;
-using MudBlazor.Services;
+using Syncfusion.Blazor;
 
-namespace MauiBlazor
+namespace MauiBlazor;
+
+public static class MauiProgram
 {
-    public static class MauiProgram
-    {
-        public static MauiApp CreateMauiApp()
-        {
-            var builder = MauiApp.CreateBuilder();
-            builder
-                .UseMauiApp<App>()
-                .ConfigureFonts(fonts =>
-                {
-                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                });
+	public static MauiApp CreateMauiApp()
+	{
+		Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("MjU3NDM3MEAzMjMyMmUzMDJlMzBpWHZVbkZkZmpjV1prdzVndmdRaHBITFFNY0ZtVUE3WXpQU1JMNGRxVnUwPQ==");
 
-            builder.Services.AddMauiBlazorWebView();
+		var builder = MauiApp.CreateBuilder();
+		builder.UseMauiApp<App>().ConfigureFonts(fonts => { fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"); });
+		builder.Services.AddMauiBlazorWebView();
+		builder.Services.AddSyncfusionBlazor();
 
 #if DEBUG
 		builder.Services.AddBlazorWebViewDeveloperTools();
-		builder.Logging.AddDebug();
 #endif
-
-            builder.Services.AddSingleton<WeatherForecastService>();
-            builder.Services.AddMudServices();
-
-            return builder.Build();
-        }
-    }
+		builder.Services.AddSingleton<WeatherForecastService>();
+		return builder.Build();
+	}
 }

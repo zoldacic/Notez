@@ -1,10 +1,14 @@
-﻿@page "/charts"
+﻿@* @page "/charts"
 
+@using ApexCharts
+@using BlazorApexCharts.Docs;
 @using MauiBlazor.Data;
 @using TodoSQLite.Data;
 @using TodoSQLite.Models;
 
-<MudDatePicker Variant="Variant.Outlined" Margin="Margin.Dense" Label="Assigned date" @bind-Value="@fromDate"></MudDatePicker>
+
+
+<MudDatePicker Variant="Variant.Outlined" Margin="Margin.Dense" Label="From date" @bind-Value="@fromDate"></MudDatePicker>
 <MudDatePicker Variant="Variant.Outlined" Margin="Margin.Dense" Label="Assigned date" @bind-Value="@toDate"></MudDatePicker>
 
 <MudChipSet Label="Tags" Variant="Variant.Outlined" Margin="Margin.Dense" @bind-SelectedChips="selectedMudChips" MultiSelection="true" Filter="true">
@@ -17,50 +21,55 @@
     }
 </MudChipSet>
 
-<MudButton Color="Color.Primary" OnClick="CreateGraphAsync">Create Graph</MudButton>
-
-<MudChart ChartType="ChartType.Line" ChartSeries="@Series" XAxisLabels="@XAxisLabels" Width="100%" Height="350px"></MudChart>
+<MudButton Color="MudBlazor.Color.Primary" OnClick="CreateGraphAsync">Create Graph</MudButton>
+*@
+ @* <MudChart ChartType="ChartType.Line" ChartSeries="@Series" XAxisLabels="@XAxisLabels" Width="100%" Height="350px"></MudChart>  *@
 
 @code {
-    protected DateTime fromDate;
-    protected DateTime toDate;
 
-    protected List<Tag> tags;
-    protected MudChip[] selectedMudChips;
+    // private List<Order> orders { get; set; } = SampleData.GetOrders();
 
-    private int Index = -1; //default value cannot be 0 -> first selectedindex is 0.
+    // protected DateTime fromDate;
+    // protected DateTime toDate;
 
-    public List<ChartSeries> Series = new List<ChartSeries>()
-    {
-        new ChartSeries() { Name = "Series 1", Data = new double[] { 90, 79, 72, 69, 62, 62, 55, 65, 70 } }
-    };
-    public string[] XAxisLabels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep" };
+    // protected List<Tag> tags;
+    // protected MudChip[] selectedMudChips = new MudChip[0];
 
-    protected override async Task OnInitializedAsync()
-    {
-        var tagRepo = new TagRepository();
-        tags = await tagRepo.GetTagsAsync();
+    // private int Index = -1; //default value cannot be 0 -> first selectedindex is 0.
 
-        await base.OnInitializedAsync();
-    }
+    // public List<ChartSeries> Series = new List<ChartSeries>()
+    // {
+    //     new ChartSeries() { Name = "Series 1", Data = new double[] { 90, 79, 72, 69, 62, 62, 55, 65, 70 } }
+    // };
+    // public string[] XAxisLabels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep" };
 
-    protected async Task CreateGraphAsync()
-    {
-        var selectedTagIds = tags.Where(t => selectedMudChips.Any(m => m.Text == t.Text)).Select(t => t.ID).ToList();
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     var tagRepo = new TagRepository();
+    //     tags = await tagRepo.GetTagsAsync();
 
-        var itemTagRepo = new ItemTagRepository();
-        var itemTags = (await itemTagRepo.GetItemTagsAsync()).Where(it => selectedTagIds.Any(t => t == it.TagId)).ToList();
+    //     await base.OnInitializedAsync();
+    // }
 
-        var itemIds = itemTags.Select(it => it.ItemId).ToList();
+    // protected async Task CreateGraphAsync()
+    // {
+    //     var selectedTags = tags.Where(t => selectedMudChips.Any(m => m.Text == t.Text)).ToList();
+    //     var selectedTagIds = selectedTags.Any() ? selectedTags.Select(t => t.ID).ToList() : new List<int>();
 
-        var itemRepo = new TodoItemRepository();
-        var items = await itemRepo.GetItemsAsync();
+    //     var itemTagRepo = new ItemTagRepository();
+    //     var itemTags = (await itemTagRepo.GetItemTagsAsync()).Where(it => selectedTagIds.Any(t => t == it.TagId)).ToList();
 
-        var selectedItems = items.Where(i => i.AssignedDate >= fromDate && i.AssignedDate <= toDate && itemIds.Any(ii => ii == i.ID)).ToList();
+    //     var itemIds = itemTags.Select(it => it.ItemId).ToList();
 
-        Series.Clear();
-        Series.Add(new ChartSeries() { Data = selectedItems.Select(i => i.TransactionAmount).ToArray() });
+    //     var itemRepo = new TodoItemRepository();
+    //     var items = await itemRepo.GetItemsAsync();
 
-        XAxisLabels = items.Select(i => i.AssignedDate.ToString()).ToArray();
-    }
+    //     var selectedItems = items.Where(i => i.AssignedDate >= fromDate && i.AssignedDate <= toDate && itemIds.Any(ii => ii == i.ID)).ToList();
+
+    //     Series.Clear();
+    //     Series.Add(new ChartSeries() { Data = selectedItems.Select(i => i.TransactionAmount).ToArray() });
+
+    //     XAxisLabels = items.Select(i => i.AssignedDate.ToString()).ToArray();
+    // }
 }
+ 

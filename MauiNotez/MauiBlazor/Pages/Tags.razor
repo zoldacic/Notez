@@ -5,9 +5,9 @@
 @using TodoSQLite.Data;
 @using TodoSQLite.Models;
 
-@inject IDialogService DialogService
+@* @inject IDialogService DialogService *@
 
-<MudStack>
+@* <MudStack>
     <MudDataGrid @ref="mudGrid" Items="@tags" Filterable="false" SortMode="@SortMode.None" Groupable="false" ReadOnly=false EditMode="DataGridEditMode.Form">
         <Columns>
             <PropertyColumn Property="x => x.Text" />
@@ -27,13 +27,13 @@
             Add
         </MudButton>
     </MudStack>
-</MudStack>
+</MudStack> *@
 
 @code {
 
     public IEnumerable<Tag> tags;
 
-    private MudDataGrid<Tag> mudGrid;
+    // private MudDataGrid<Tag> mudGrid;
 
     protected override async Task OnInitializedAsync()
     {
@@ -48,29 +48,29 @@
 
     private async Task OpenEditDialogAsync(MouseEventArgs args, Tag tag)
     {
-        var parameters = new DialogParameters { };
+        // var parameters = new DialogParameters { };
 
-        if (tag != null)
-        {
-            parameters = new DialogParameters { ["tag"] = tag };
-        }
+        // if (tag != null)
+        // {
+        //     parameters = new DialogParameters { ["tag"] = tag };
+        // }
 
-        var options = new DialogOptions { CloseOnEscapeKey = true };
-        await DialogService.Show<EditTag>("Add tag", parameters, options).Result;
+        // var options = new DialogOptions { CloseOnEscapeKey = true };
+        // await DialogService.Show<EditTag>("Add tag", parameters, options).Result;
         await LoadTagsAsync();
     }
 
     private async Task OpenDeleteDialoGAsync(MouseEventArgs args, Tag tag)
     {
-        var parameters = new DialogParameters { };
+        // var parameters = new DialogParameters { };
 
-        if (tag != null)
-        {
-            parameters = new DialogParameters { ["tag"] = tag };
-        }
+        // if (tag != null)
+        // {
+        //     parameters = new DialogParameters { ["tag"] = tag };
+        // }
 
-        var options = new DialogOptions { CloseOnEscapeKey = true };
-        await DialogService.Show<DeleteTag>("Delete tag", parameters, options).Result;
+        // var options = new DialogOptions { CloseOnEscapeKey = true };
+        // await DialogService.Show<DeleteTag>("Delete tag", parameters, options).Result;
         await LoadTagsAsync();
     }
 }

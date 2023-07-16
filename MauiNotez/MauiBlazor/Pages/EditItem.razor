@@ -1,47 +1,62 @@
 ﻿@using MauiBlazor.Data;
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor.Popups
 @using TodoSQLite.Data;
 @using TodoSQLite.Models;
-<MudDialog>
-    <DialogContent>
-        <MudTextField Variant="Variant.Outlined" Margin="Margin.Dense" Label="Name" @bind-Value="@item.Name"></MudTextField>
+@using Syncfusion.Blazor.Inputs
 
-        <MudChipSet Label="Tags" Variant="Variant.Outlined" Margin="Margin.Dense" @bind-SelectedChips="selected" MultiSelection="true" Filter="true">
-            @if (tags != null)
-            {
-                @foreach (var tag in tags)
-                {
-                    <MudChip @ref="mudChip" Text="@tag.Text"></MudChip>
-                }
-            }         
-        </MudChipSet>
+<SfDialog Width="250px" IsModal="true" Visible="true">
+    <DialogTemplates>
+        <Content> 
+            <SfTextBox @bind-Value="@item.Name" CssClass="e-outline" Placeholder="Name" FloatLabelType="@FloatLabelType.Always"></SfTextBox>
 
-        <MudTextField Variant="Variant.Outlined" Margin="Margin.Dense" Label="Notes" @bind-Value="@item.Notes" Lines="3"></MudTextField>
+             <SfChip>
+                <ChipItems>
+                    @if (tags != null)
+                    {
+                        @foreach (var tag in tags)
+                        {
+                            <ChipItem @ref="chip" Text="@tag.Text"></ChipItem>
+                        }
+                    }                    
+                </ChipItems>
+            </SfChip>
+            
+            <SfTextBox @bind-Value="@item.Notes" Placeholder="Notes" Multiline=true CssClass="e-outline" FloatLabelType="@FloatLabelType.Always"></SfTextBox>
+            <SfDatePicker TValue="DateTime?" Placeholder="Assigned date" Value="assignedDate" FloatLabelType="@FloatLabelType.Always"  ShowClearButton="true"></SfDatePicker>
+            <SfTextBox Type="InputType.Number" Placeholder="Transaction amount" @bind-Value="@transactionAmount" CssClass="e-outline" FloatLabelType="@FloatLabelType.Always"></SfTextBox>
 
-        <MudDatePicker Variant="Variant.Outlined" Margin="Margin.Dense" Label="Assigned date" @bind-Value="@item.AssignedDate"></MudDatePicker>
-
-        <MudTextField Variant="Variant.Outlined" Margin="Margin.Dense" Label="Name" @bind-Value="@item.TransactionAmount"></MudTextField>
-    </DialogContent>
-    <DialogActions>
-        <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
-    </DialogActions>
-</MudDialog>
+            <DialogButtons>
+                <DialogButton Content="Save" IsPrimary="true" OnClick="@Submit" />
+                <DialogButton Content="Cancel" OnClick="@Cancel" />
+            </DialogButtons>
+        </Content>
+    </DialogTemplates>
+</SfDialog>
 
 @code {
-    List<Tag> tags;
 
-    MudChip[] selected;
+    [Parameter]
+    public EventCallback OnItemSaved { get; set; }
 
-    List<MudChip> mudChips = new List<MudChip>();
-    MudChip mudChip { set { mudChips.Add(value); } }
+    [Parameter]
+    public EventCallback OnItemSaveCancelled { get; set; }
 
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter]
+    public TodoItem item { get; set; } = new TodoItem();
 
-    [Parameter] public TodoItem item { get; set; } = new TodoItem();
+    private List<Tag> tags;
+
+    private ChipItem[] selectedChips;
+    private List<ChipItem> chips = new List<ChipItem>();
+    private ChipItem chip { set { chips.Add(value); } }
+
+    private string transactionAmount;
+    private DateTime? assignedDate;    
 
     protected override async Task OnInitializedAsync()
     {
-
         var tagRepo = new TagRepository();
         tags = await tagRepo.GetTagsAsync();
 
@@ -52,10 +67,13 @@
     {
         if (firstRender)
         {
+            transactionAmount = item.TransactionAmount.ToString();
+            assignedDate = item.AssignedDate;
+
             var itemTagsRepo = new ItemTagRepository();
             var itemTags = await itemTagsRepo.GetItemTagsForItemAsync(item.ID);
 
-            var selectedMudChips = new List<MudChip>();
+            var selectedMudChips = new List<ChipItem>();
             foreach (var itemTag in itemTags)
             {
                 var tag = tags.FirstOrDefault(t => t.ID == itemTag.TagId);
@@ -67,28 +85,32 @@
                 }
                 else
                 {
-                    var mudChip = mudChips.FirstOrDefault(m => m.Text == tag.Text);
+                    var mudChip = chips.FirstOrDefault(m => m.Text == tag.Text);
                     selectedMudChips.Add(mudChip);
                 }
             }
 
-            selected = selectedMudChips.ToArray();
+            selectedChips = selectedMudChips.ToArray();
             StateHasChanged();
         }
 
         await base.OnAfterRenderAsync(firstRender);        
     }
 
+    private async Task Submit() {
+        var selectedTags = tags.Where(t => selectedChips.Any(s => s.Text == t.Text)).ToList();
 
-    async Task Submit() {
-
-        var selectedTags = tags.Where(t => selected.Any(s => s.Text == t.Text)).ToList();
+        item.TransactionAmount = double.Parse(transactionAmount);
+        item.AssignedDate = assignedDate;
 
         var repo = new TodoItemRepository();
         await repo.SaveItemAsync(item, selectedTags);
 
-        MudDialog.Close(DialogResult.Ok(true));
+        await OnItemSaved.InvokeAsync();
     }
-    
-    void Cancel() => MudDialog.Cancel();
+
+    private async Task Cancel()
+    {
+        await OnItemSaveCancelled.InvokeAsync();
+    } 
 }
