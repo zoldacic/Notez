@@ -1,33 +1,44 @@
 ﻿@using MauiBlazor.Data;
+@using Syncfusion.Blazor.Inputs;
+@using Syncfusion.Blazor.Popups;
 @using TodoSQLite.Data;
 @using TodoSQLite.Models;
-@* <MudDialog>
-    <DialogContent>
-        <MudTextField Variant="Variant.Outlined" Margin="Margin.Dense" Label="Text" @bind-Value="@tag.Text"></MudTextField>
-    </DialogContent>
-    <DialogActions>
-        <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
-    </DialogActions>
-</MudDialog> *@
 
-@code {
-    List<Tag> tags;
+<SfDialog Width="250px" IsModal="true" Visible="true">
+    <DialogTemplates>
+        <Content> 
 
-    // MudChip[] selected;
+            <SfTextBox @bind-Value="@tag.Text" CssClass="e-outline" Placeholder="Name" FloatLabelType="@FloatLabelType.Always"></SfTextBox>
 
-    // [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+            <DialogButtons>
+                <DialogButton Content="Save" IsPrimary="true" OnClick="@Submit" />
+                <DialogButton Content="Cancel" OnClick="@Cancel" />
+            </DialogButtons>
+        </Content>
+    </DialogTemplates>
+</SfDialog>
 
-    [Parameter] public Tag tag { get; set; } = new Tag();
+@code {    
+
+    [Parameter] 
+    public Tag tag { get; set; } = new Tag();
+
+    [Parameter]
+    public EventCallback OnTagSaved { get; set; }
+
+    [Parameter]
+    public EventCallback OnTagSaveCancelled { get; set; }    
 
     async Task Submit() { 
 
         var repo = new TagRepository();
 
         await repo.SaveTagAsync(tag);
-
-        // MudDialog.Close(DialogResult.Ok(true));
+        await OnTagSaved.InvokeAsync();
     }
-    
-    // void Cancel() => MudDialog.Cancel();
+
+    private async Task Cancel()
+    {
+        await OnTagSaveCancelled.InvokeAsync();
+    }
 }

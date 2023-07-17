@@ -2,20 +2,30 @@
 @using TodoSQLite.Data;
 @using TodoSQLite.Models;
 
-@* <MudDialog>
-    <DialogContent>
-        Do you want to delete tag with text "@tag.Text"?
-    </DialogContent>
-    <DialogActions>
-        <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
-    </DialogActions>
-</MudDialog> *@
+<SfDialog Width="250px" IsModal="true" Visible="true">
+    <DialogTemplates>
+        <Content> 
+
+            Do you want to delete tag with text "@tag.Text"?
+
+            <DialogButtons>
+                <DialogButton Content="Save" IsPrimary="true" OnClick="@Submit" />
+                <DialogButton Content="Cancel" OnClick="@Cancel" />
+            </DialogButtons>
+        </Content>
+    </DialogTemplates>
+</SfDialog>
 
 @code {
-    // [CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
-    [Parameter] public Tag tag { get; set; } = new Tag();
+    [Parameter] 
+    public Tag tag { get; set; } = new Tag();
+
+    [Parameter]
+    public EventCallback OnTagDeleted { get; set; }
+
+    [Parameter]
+    public EventCallback OnTagDeleteCancelled { get; set; }
 
     async Task Submit() { 
 
@@ -23,8 +33,11 @@
 
         await repo.DeleteTagAsync(tag);
 
-        // MudDialog.Close(DialogResult.Ok(true));
+        await OnTagDeleted.InvokeAsync();
     }
-    
-    // void Cancel() => MudDialog.Cancel();
+
+    private async Task Cancel()
+    {
+        await OnTagDeleteCancelled.InvokeAsync();
+    }
 }

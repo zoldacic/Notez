@@ -19,14 +19,16 @@
                 @{
                     var item = (context as TodoItem);
                     <div class="image">
-                        <SfButton IconCss="e-icons e-chevron-down-fill" OnClick="@(x => OpenEditDialogAsync(x, item))"></SfButton>
-                        <SfButton IconCss="e-icons e-chevron-down-fill" OnClick="@(x => OpenDeleteDialogAsync(x, item))"></SfButton>
+                        <SfButton Content="Edit" OnClick="@(x => OpenEditDialogAsync(x, item))"></SfButton>
+                        <SfButton Content="Delete" OnClick="@(x => OpenDeleteDialogAsync(x, item))"></SfButton>
                     </div>
                 }
             </Template>
         </GridColumn>
     </GridColumns>
 </SfGrid>
+
+    <SfButton Content="Add" IconCss="e-icons e-chevron-down-fill" OnClick="@(x => OpenEditDialogAsync(x, null))"></SfButton>
 </SfCard>
 
 @if (hasSelectedItem)

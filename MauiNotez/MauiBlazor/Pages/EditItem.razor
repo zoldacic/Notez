@@ -42,13 +42,13 @@
 @code {
 
     [Parameter]
+    public TodoItem item { get; set; } = new TodoItem();
+
+    [Parameter]
     public EventCallback OnItemSaved { get; set; }
 
     [Parameter]
     public EventCallback OnItemSaveCancelled { get; set; }
-
-    [Parameter]
-    public TodoItem item { get; set; } = new TodoItem();
 
     private List<Tag> tags;
 
