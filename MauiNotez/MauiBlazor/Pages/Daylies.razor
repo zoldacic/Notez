@@ -19,8 +19,8 @@
                 @{
                     var item = (context as TodoItem);
                     <div class="image">
-                        <SfButton Content="Edit" OnClick="@(x => OpenEditDialogAsync(x, item))"></SfButton>
-                        <SfButton Content="Delete" OnClick="@(x => OpenDeleteDialogAsync(x, item))"></SfButton>
+                        <SfButton Content="Edit" OnClick="@(x => OpenEditDialog(x, item))"></SfButton>
+                        <SfButton Content="Delete" OnClick="@(x => OpenDeleteDialog(x, item))"></SfButton>
                     </div>
                 }
             </Template>
@@ -28,54 +28,37 @@
     </GridColumns>
 </SfGrid>
 
-    <SfButton Content="Add" IconCss="e-icons e-chevron-down-fill" OnClick="@(x => OpenEditDialogAsync(x, null))"></SfButton>
+    <SfButton Content="Add" IconCss="e-icons e-chevron-down-fill" OnClick="@(x => OpenEditDialog(x, null))"></SfButton>
 </SfCard>
 
-@if (hasSelectedItem)
+@if (hasSelectedItemForEdit)
 {
-    <EditItem 
-        @ref="editDialog" 
-        item="selectedItem" 
-        OnItemSaved="@(() => OnEditDialogSubmit())" 
-        OnItemSaveCancelled="@(() => OnEditDialogCancel())">
+    <EditItem @ref="editDialog"
+              item="selectedItem"
+              OnItemSaved="@(() => OnEditDialogSubmit())"
+              OnItemSaveCancelled="@(() => OnEditDialogCancel())">
     </EditItem>
 }
 
-@* <MudStack>
-    <MudDataGrid @ref="mudGrid" Items="@items" Filterable="false" SortMode="@SortMode.None" Groupable="false" ReadOnly=false EditMode="DataGridEditMode.Form">
-        <Columns>
-            <PropertyColumn Property="x => x.Name" Title="Name" />
-            <PropertyColumn Property="x => GetTags(x.ID)" Title="Tags" />
-            <TemplateColumn CellClass="d-flex justify-end">
-                <CellTemplate>
-                    <MudStack Row>
-                        <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary" @onclick="@(x => OpenEditDialogAsync(x, context.Item))">Edit</MudButton>
-                        <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary" @onclick="@(x => OpenDeleteDialoGAsync(x, context.Item))">Delete</MudButton>
-                    </MudStack>
-                </CellTemplate>
-            </TemplateColumn>
-        </Columns>
-    </MudDataGrid>
-
-    <MudStack AlignItems="AlignItems.End">
-        <MudButton @onclick="x => OpenEditDialogAsync(x, null)" Variant="Variant.Filled" Color="Color.Primary">
-            Add
-        </MudButton>
-    </MudStack>
-</MudStack> *@
+@if (hasSelectedItemForDelete)
+{
+    <DeleteItem @ref="deleteDialog"
+              item="selectedItem"
+              OnItemSaved="@(() => OnDeleteDialogSubmit())"
+              OnItemSaveCancelled="@(() => OnDeleteDialogCancel())">
+    </DeleteItem>
+}
 
 @code {
-    private bool hasSelectedItem = false;
-    public TodoItem selectedItem;
+    private bool hasSelectedItemForEdit = false;
+    private bool hasSelectedItemForDelete = false;
 
+    public TodoItem selectedItem;
 
     public IEnumerable<TodoItem> items;
 
-    // private bool isEditDialogVisible = false;
-
-    // private MudDataGrid<TodoItem> mudGrid;
-
     private EditItem editDialog;
+    private DeleteItem deleteDialog;
 
     private List<Tag> allTags;
     private List<ItemTag> allItemTags;
@@ -98,48 +81,35 @@
         allItemTags = await itemTagRepo.GetItemTagsAsync();
     }
 
-    // protected string GetTags(int itemId)
-    // {
-    //     var itemTags = allItemTags.Where(it => it.ItemId == itemId).ToList();
-    //     var tagIds = itemTags.Select(it => it.TagId).ToList();
-    //     var tags = allTags.Where(t => tagIds.Any(ti => ti == t.ID)).Select(t => t.Text).ToList();
-
-    //     var tagString = string.Join(", ", tags);
-    //     return tagString;
-    // }
-
-    private async Task OpenEditDialogAsync(MouseEventArgs args, TodoItem item)
+    private void OpenEditDialog(MouseEventArgs args, TodoItem item)
     {
         selectedItem = item;
-        hasSelectedItem = true;
-        // var parameters = new DialogParameters { };
-
-        // if (item != null)
-        // {
-        //     parameters = new DialogParameters { ["item"] = item };
-        // }
-
-        // var options = new DialogOptions { CloseOnEscapeKey = true };
-        //await DialogService.Show<EditItem>("Add item", parameters, options).Result;,
-        // editDialog.OpenDialog(item);
-        await LoadItems();
+        hasSelectedItemForEdit = true;
     }
 
-    private async Task OpenDeleteDialogAsync(MouseEventArgs args, TodoItem item)
+    private void OpenDeleteDialog(MouseEventArgs args, TodoItem item)
     {
-        hasSelectedItem = true;
-        // var options = new DialogOptions { CloseOnEscapeKey = true };
-        // await DialogService.Show<DeleteItem>("Delete item", parameters, options).Result;
-        await LoadItems();
+        selectedItem = item;
+        hasSelectedItemForDelete = true;
     }
 
     private void OnEditDialogSubmit()
     {
-        hasSelectedItem = false;
+        hasSelectedItemForEdit = false;
     }
 
     private void OnEditDialogCancel()
     {
-        hasSelectedItem = false;
+        hasSelectedItemForEdit = false;
+    }
+
+    private void OnDeleteDialogSubmit()
+    {
+        hasSelectedItemForEdit = false;
+    }
+
+    private void OnDeleteDialogCancel()
+    {
+        hasSelectedItemForEdit = false;
     }
 }

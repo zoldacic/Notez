@@ -2,38 +2,63 @@
 
 @using System.Net.Http.Json
 @using MauiBlazor.Data;
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Grids
 @using TodoSQLite.Data;
 @using TodoSQLite.Models;
 
-@* @inject IDialogService DialogService *@
+<SfCard>
+<SfGrid DataSource="@tags" AllowTextWrap="true" AllowPaging="true">
+    <GridColumns>
+        <GridColumn Field="@nameof(Tag.Text)" HeaderText="Text" Width="190"></GridColumn>
+        <GridColumn HeaderText="">
+            <Template>
+                @{
+                    var tag = (context as Tag);
+                    <div class="image">
+                        <SfButton Content="Edit" OnClick="@(x => OpenEditDialog(x, tag))"></SfButton>
+                        <SfButton Content="Delete" OnClick="@(x => OpenDeleteDialog(x, tag))"></SfButton>
+                    </div>
+                }
+            </Template>
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
 
-@* <MudStack>
-    <MudDataGrid @ref="mudGrid" Items="@tags" Filterable="false" SortMode="@SortMode.None" Groupable="false" ReadOnly=false EditMode="DataGridEditMode.Form">
-        <Columns>
-            <PropertyColumn Property="x => x.Text" />
-            <TemplateColumn CellClass="d-flex justify-end">
-                <CellTemplate>
-                    <MudStack Row>
-                        <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary" @onclick="@(x => OpenEditDialogAsync(x, context.Item))">Edit</MudButton>
-                        <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary" @onclick="@(x => OpenDeleteDialoGAsync(x, context.Item))">Delete</MudButton>
-                    </MudStack>
-                </CellTemplate>
-            </TemplateColumn>
-        </Columns>
-    </MudDataGrid>
+    <SfButton Content="Add" IconCss="e-icons e-chevron-down-fill" OnClick="@(x => OpenEditDialog(x, null))"></SfButton>
+</SfCard>
 
-    <MudStack AlignItems="AlignItems.End">
-        <MudButton @onclick="x => OpenEditDialogAsync(x, null)" Variant="Variant.Filled" Color="Color.Primary">
-            Add
-        </MudButton>
-    </MudStack>
-</MudStack> *@
+@if (hasSelectedTagForEdit)
+{
+    <EditTag @ref="editDialog"
+              item="selectedTag"
+              OnTagSaved="@(() => OnEditDialogSubmit())"
+              OnTagSaveCancelled="@(() => OnEditDialogCancel())">
+    </EditTag>
+}
+
+@if (hasSelectedTagForDelete)
+{
+    <DeleteTag @ref="deleteDialog"
+                item="selectedTag"
+                OnTagSaved="@(() => OnDeleteDialogSubmit())"
+                OnTagSaveCancelled="@(() => OnDeleteDialogCancel())">
+    </DeleteTag>
+}
+
 
 @code {
 
-    public IEnumerable<Tag> tags;
+    private bool hasSelectedTagForEdit = false;
+    private bool hasSelectedTagForDelete = false;
 
-    // private MudDataGrid<Tag> mudGrid;
+    private EditTag editDialog;
+    private DeleteTag deleteDialog;
+
+    private Tag selectedTag;
+
+    public IEnumerable<Tag> tags;
 
     protected override async Task OnInitializedAsync()
     {
@@ -46,31 +71,35 @@
         tags = await repo.GetTagsAsync();
     }
 
-    private async Task OpenEditDialogAsync(MouseEventArgs args, Tag tag)
+    private void OpenEditDialog(MouseEventArgs args, Tag item)
     {
-        // var parameters = new DialogParameters { };
-
-        // if (tag != null)
-        // {
-        //     parameters = new DialogParameters { ["tag"] = tag };
-        // }
-
-        // var options = new DialogOptions { CloseOnEscapeKey = true };
-        // await DialogService.Show<EditTag>("Add tag", parameters, options).Result;
-        await LoadTagsAsync();
+        selectedTag = item;
+        hasSelectedTagForEdit = true;
     }
 
-    private async Task OpenDeleteDialoGAsync(MouseEventArgs args, Tag tag)
+    private void OpenDeleteDialog(MouseEventArgs args, Tag item)
     {
-        // var parameters = new DialogParameters { };
+        selectedTag = item;
+        hasSelectedTagForDelete = true;
+    }
 
-        // if (tag != null)
-        // {
-        //     parameters = new DialogParameters { ["tag"] = tag };
-        // }
+    private void OnEditDialogSubmit()
+    {
+        hasSelectedTagForEdit = false;
+    }
 
-        // var options = new DialogOptions { CloseOnEscapeKey = true };
-        // await DialogService.Show<DeleteTag>("Delete tag", parameters, options).Result;
-        await LoadTagsAsync();
+    private void OnEditDialogCancel()
+    {
+        hasSelectedTagForEdit = false;
+    }
+
+    private void OnDeleteDialogSubmit()
+    {
+        hasSelectedTagForEdit = false;
+    }
+
+    private void OnDeleteDialogCancel()
+    {
+        hasSelectedTagForEdit = false;
     }
 }

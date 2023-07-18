@@ -3,29 +3,23 @@
 @using MauiBlazor.Data;
 @using Syncfusion.Blazor.Buttons
 @using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor.Cards
 @using TodoSQLite.Data;
 @using TodoSQLite.Models;
 
-<SfDatePicker TValue="DateTime?" Placeholder="From date" CssClass="e-outline" Value="fromDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
-<SfDatePicker TValue="DateTime?" Placeholder="To date" CssClass="e-outline" Value="toDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
+<SfCard>
+    <CardContent>
+        <SfDatePicker TValue="DateTime?" Placeholder="From date" CssClass="e-outline" Value="fromDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
+        <SfDatePicker TValue="DateTime?" Placeholder="To date" CssClass="e-outline" Value="toDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
 
-<div style="margin-bottom:7px">
-    <SfChip Selection="SelectionType.Multiple" CssClass="e-outline" SelectedChips="selectedChips">
-        <ChipItems>
-            @if (tags != null)
-            {
-                @foreach (var tag in tags)
-                {
-                    <ChipItem @ref="chip" Text="@tag.Text"></ChipItem>
-                }
-            }                    
-        </ChipItems>
-    </SfChip>
-</div>
+        <TagSelection @ref="tagSelectionRef" item="null" />
 
-<SfButton Content="Create graph" IsPrimary="true" OnClick="CreateGraphAsync" />
+        <SfButton Content="Create graph" IsPrimary="true" OnClick="CreateChartAsync" />
+    </CardContent>
+</SfCard>
 
 @code {
+    private TagSelection tagSelectionRef;
 
     private List<Tag> tags;
 
@@ -33,8 +27,8 @@
     private List<ChipItem> chips = new List<ChipItem>();
     private ChipItem chip { set { chips.Add(value); } }
 
-    private DateTime fromDate;
-    private DateTime toDate;
+    private DateTime? fromDate;
+    private DateTime? toDate;
 
     protected override async Task OnInitializedAsync()
     {
@@ -44,7 +38,7 @@
         await base.OnInitializedAsync();
     }
 
-    protected async Task CreateGraphAsync()
+    protected async Task CreateChartAsync()
     {
         var selectedTags = tags.Where(t => selectedChips.Any(m => m == t.Text)).ToList();
         var selectedTagIds = selectedTags.Any() ? selectedTags.Select(t => t.ID).ToList() : new List<int>();

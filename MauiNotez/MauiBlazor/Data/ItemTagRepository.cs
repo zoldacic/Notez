@@ -1,6 +1,4 @@
 ﻿using TodoSQLite.Models;
-using static MudBlazor.CategoryTypes;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace MauiBlazor.Data;
 

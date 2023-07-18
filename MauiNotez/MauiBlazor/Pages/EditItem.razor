@@ -11,19 +11,7 @@
         <Content> 
             <SfTextBox @bind-Value="@item.Name" CssClass="e-outline" Placeholder="Name" FloatLabelType="@FloatLabelType.Always"></SfTextBox>
 
-            <div style="margin-bottom:7px">
-                <SfChip Selection="SelectionType.Multiple" CssClass="e-outline" SelectedChips="selectedChips">
-                    <ChipItems>
-                        @if (tags != null)
-                        {
-                            @foreach (var tag in tags)
-                            {
-                                <ChipItem @ref="chip" Text="@tag.Text"></ChipItem>
-                            }
-                        }                    
-                    </ChipItems>
-                </SfChip>
-            </div>
+            <TagSelection @ref="tagSelectionRef" item="@item" />
 
             <SfTextBox @bind-Value="@item.Notes" Placeholder="Notes" Multiline=true CssClass="e-outline" FloatLabelType="@FloatLabelType.Always"></SfTextBox>
             <div style="margin-bottom:10px">
@@ -50,22 +38,10 @@
     [Parameter]
     public EventCallback OnItemSaveCancelled { get; set; }
 
-    private List<Tag> tags;
-
-    private string[] selectedChips = new string[0];
-    private List<ChipItem> chips = new List<ChipItem>();
-    private ChipItem chip { set { chips.Add(value); } }
+    private TagSelection tagSelectionRef;
 
     private string transactionAmount;
     private DateTime? assignedDate;    
-
-    protected override async Task OnInitializedAsync()
-    {
-        var tagRepo = new TagRepository();
-        tags = await tagRepo.GetTagsAsync();
-
-        await base.OnInitializedAsync();
-    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -73,42 +49,17 @@
         {
             transactionAmount = item.TransactionAmount.ToString();
             assignedDate = item.AssignedDate;
-
-            var itemTagsRepo = new ItemTagRepository();
-            var itemTags = await itemTagsRepo.GetItemTagsForItemAsync(item.ID);
-
-            var selectedMudChips = new List<ChipItem>();
-            foreach (var itemTag in itemTags)
-            {
-                var tag = tags.FirstOrDefault(t => t.ID == itemTag.TagId);
-
-                if (tag is null)
-                {
-                    // This ItemTag should not exist - Delete it
-                    await itemTagsRepo.DeleteItemTagAsync(itemTag);
-                }
-                else
-                {
-                    var mudChip = chips.FirstOrDefault(m => m.Text == tag.Text);
-                    selectedMudChips.Add(mudChip);
-                }
-            }
-
-            selectedChips = selectedMudChips.Select(s => s.Text).ToArray();
-            StateHasChanged();
         }
 
         await base.OnAfterRenderAsync(firstRender);        
     }
 
     private async Task Submit() {
-        var selectedTags = tags.Where(t => selectedChips.Any(s => s == t.Text)).ToList();
-
         item.TransactionAmount = string.IsNullOrEmpty(transactionAmount) ? null : double.Parse(transactionAmount);
         item.AssignedDate = assignedDate;
 
         var repo = new TodoItemRepository();
-        await repo.SaveItemAsync(item, selectedTags);
+        await repo.SaveItemAsync(item, tagSelectionRef.GetSelectedTags());
 
         await OnItemSaved.InvokeAsync();
     }

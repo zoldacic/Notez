@@ -1,0 +1,76 @@
+﻿@using MauiBlazor.Data;
+@using Syncfusion.Blazor.Buttons;
+@using TodoSQLite.Models;
+            
+<div style="margin-bottom:7px">
+    <SfChip @ref="chipsRef" Selection="SelectionType.Multiple" CssClass="e-outline">
+        <ChipItems>
+            @if (tags != null)
+            {
+                @foreach (var tag in tags)
+                {
+                    <ChipItem @ref="chip" Text="@tag.Text" Value="@tag.Text"></ChipItem>
+                }
+            }                    
+        </ChipItems>
+    </SfChip>
+</div>
+
+@code {
+    [Parameter]
+    public TodoItem? item { get; set; }
+
+    private List<Tag> tags;
+
+    private SfChip chipsRef;
+    private List<ChipItem> chips = new List<ChipItem>();
+    private ChipItem chip { set { chips.Add(value); } }
+
+    public List<Tag> GetSelectedTags()
+    {
+        var selectedChips = chipsRef.GetSelectedChips().Select(c => c.Value).ToArray();
+
+        var selectedTags = tags.Where(t => selectedChips.Any(s => s == t.Text)).ToList();
+        return selectedTags;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var tagRepo = new TagRepository();
+        tags = await tagRepo.GetTagsAsync();
+
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && item != null)
+        {
+            var itemTagsRepo = new ItemTagRepository();
+
+            var itemTags = await itemTagsRepo.GetItemTagsForItemAsync(item.ID);
+
+            var selectedMudChips = new List<ChipItem>();
+            foreach (var itemTag in itemTags)
+            {
+                var tag = tags.FirstOrDefault(t => t.ID == itemTag.TagId);
+
+                if (tag is null)
+                {
+                    // This ItemTag should not exist - Delete it
+                    await itemTagsRepo.DeleteItemTagAsync(itemTag);
+                }
+                else
+                {
+                    var mudChip = chips.FirstOrDefault(m => m.Text == tag.Text);
+                    selectedMudChips.Add(mudChip);
+                }
+            }
+
+            chipsRef.SelectChips(selectedMudChips.Select(s => s.Text).ToArray());
+            StateHasChanged();
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}
