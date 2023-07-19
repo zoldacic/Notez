@@ -34,7 +34,7 @@
 @if (hasSelectedItemForEdit)
 {
     <EditItem @ref="editDialog"
-              item="selectedItem"
+              Item="selectedItem"
               OnItemSaved="@(() => OnEditDialogSubmit())"
               OnItemSaveCancelled="@(() => OnEditDialogCancel())">
     </EditItem>
@@ -43,7 +43,7 @@
 @if (hasSelectedItemForDelete)
 {
     <DeleteItem @ref="deleteDialog"
-              item="selectedItem"
+              Item="selectedItem"
               OnItemSaved="@(() => OnDeleteDialogSubmit())"
               OnItemSaveCancelled="@(() => OnDeleteDialogCancel())">
     </DeleteItem>

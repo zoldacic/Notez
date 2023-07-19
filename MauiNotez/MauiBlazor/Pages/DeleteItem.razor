@@ -6,7 +6,7 @@
     <DialogTemplates>
         <Content> 
 
-            Do you want to delete item with name "@item.Name"?
+            Do you want to delete Item with name "@Item.Name"?
 
             <DialogButtons>
                 <DialogButton Content="Save" IsPrimary="true" OnClick="@Submit" />
@@ -18,7 +18,7 @@
 
 @code {
     [Parameter] 
-    public TodoItem item { get; set; } = new TodoItem();
+    public TodoItem Item { get; set; } = new TodoItem();
 
     [Parameter]
     public EventCallback OnItemDeleted { get; set; }
@@ -30,7 +30,7 @@
 
         var repo = new TodoItemRepository();
 
-        await repo.DeleteItemAsync(item);
+        await repo.DeleteItemAsync(Item);
 
         await OnItemDeleted.InvokeAsync();
     }

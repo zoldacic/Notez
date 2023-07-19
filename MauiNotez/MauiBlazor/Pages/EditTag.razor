@@ -7,8 +7,7 @@
 <SfDialog Width="250px" IsModal="true" Visible="true">
     <DialogTemplates>
         <Content> 
-
-            <SfTextBox @bind-Value="@tag.Text" CssClass="e-outline" Placeholder="Name" FloatLabelType="@FloatLabelType.Always"></SfTextBox>
+            <SfTextBox @bind-Value="@Tag.Text" CssClass="e-outline" Placeholder="Name" FloatLabelType="@FloatLabelType.Always"></SfTextBox>
 
             <DialogButtons>
                 <DialogButton Content="Save" IsPrimary="true" OnClick="@Submit" />
@@ -18,22 +17,32 @@
     </DialogTemplates>
 </SfDialog>
 
-@code {    
+@code {
 
-    [Parameter] 
-    public Tag tag { get; set; } = new Tag();
+    [Parameter]
+    public Tag Tag { get; set; }
 
     [Parameter]
     public EventCallback OnTagSaved { get; set; }
 
     [Parameter]
-    public EventCallback OnTagSaveCancelled { get; set; }    
+    public EventCallback OnTagSaveCancelled { get; set; }
 
-    async Task Submit() { 
+    protected override async Task OnInitializedAsync()
+    {
+        if (Tag == null)
+        {
+            Tag = new Tag();
+        }
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task Submit() { 
 
         var repo = new TagRepository();
 
-        await repo.SaveTagAsync(tag);
+        await repo.SaveTagAsync(Tag);
         await OnTagSaved.InvokeAsync();
     }
 

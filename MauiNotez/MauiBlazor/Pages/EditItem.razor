@@ -9,13 +9,13 @@
 <SfDialog Width="250px" IsModal="true" Visible="true">
     <DialogTemplates>
         <Content> 
-            <SfTextBox @bind-Value="@item.Name" CssClass="e-outline" Placeholder="Name" FloatLabelType="@FloatLabelType.Always"></SfTextBox>
+            <SfTextBox @bind-Value="@Item.Name" CssClass="e-outline" Placeholder="Name" FloatLabelType="@FloatLabelType.Always"></SfTextBox>
 
-            <TagSelection @ref="tagSelectionRef" item="@item" />
+            <TagSelection @ref="tagSelectionRef" item="@Item" />
 
-            <SfTextBox @bind-Value="@item.Notes" Placeholder="Notes" Multiline=true CssClass="e-outline" FloatLabelType="@FloatLabelType.Always"></SfTextBox>
+            <SfTextBox @bind-Value="@Item.Notes" Placeholder="Notes" Multiline=true CssClass="e-outline" FloatLabelType="@FloatLabelType.Always"></SfTextBox>
             <div style="margin-bottom:10px">
-                <SfDatePicker TValue="DateTime?" Placeholder="Assigned date" CssClass="e-outline" Value="assignedDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
+                <SfDatePicker TValue="DateTime?" Placeholder="Assigned date" CssClass="e-outline" @bind-Value="assignedDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
             </div>
             <SfTextBox Type="InputType.Number" Placeholder="Transaction amount" @bind-Value="@transactionAmount" CssClass="e-outline" FloatLabelType="@FloatLabelType.Always"></SfTextBox>
 
@@ -30,7 +30,7 @@
 @code {
 
     [Parameter]
-    public TodoItem item { get; set; } = new TodoItem();
+    public TodoItem? Item { get; set; }
 
     [Parameter]
     public EventCallback OnItemSaved { get; set; }
@@ -43,23 +43,33 @@
     private string transactionAmount;
     private DateTime? assignedDate;    
 
+    protected override async Task OnInitializedAsync()
+    {
+        if (Item == null)
+        {
+            Item = new TodoItem();
+        }
+
+        await base.OnInitializedAsync();
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            transactionAmount = item.TransactionAmount.ToString();
-            assignedDate = item.AssignedDate;
+            transactionAmount = Item.TransactionAmount.ToString();
+            assignedDate = Item.AssignedDate;
         }
 
         await base.OnAfterRenderAsync(firstRender);        
     }
 
     private async Task Submit() {
-        item.TransactionAmount = string.IsNullOrEmpty(transactionAmount) ? null : double.Parse(transactionAmount);
-        item.AssignedDate = assignedDate;
+        Item.TransactionAmount = string.IsNullOrEmpty(transactionAmount) ? null : double.Parse(transactionAmount);
+        Item.AssignedDate = assignedDate;
 
         var repo = new TodoItemRepository();
-        await repo.SaveItemAsync(item, tagSelectionRef.GetSelectedTags());
+        await repo.SaveItemAsync(Item, tagSelectionRef.GetSelectedTags());
 
         await OnItemSaved.InvokeAsync();
     }

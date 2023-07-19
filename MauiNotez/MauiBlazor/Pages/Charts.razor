@@ -4,13 +4,14 @@
 @using Syncfusion.Blazor.Buttons
 @using Syncfusion.Blazor.Calendars
 @using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Charts
 @using TodoSQLite.Data;
 @using TodoSQLite.Models;
 
 <SfCard>
     <CardContent>
-        <SfDatePicker TValue="DateTime?" Placeholder="From date" CssClass="e-outline" Value="fromDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
-        <SfDatePicker TValue="DateTime?" Placeholder="To date" CssClass="e-outline" Value="toDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
+        <SfDatePicker TValue="DateTime?" Placeholder="From date" CssClass="e-outline" @bind-value="fromDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
+        <SfDatePicker TValue="DateTime?" Placeholder="To date" CssClass="e-outline" @bind-value="toDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
 
         <TagSelection @ref="tagSelectionRef" item="null" />
 
@@ -18,17 +19,26 @@
     </CardContent>
 </SfCard>
 
+<SfChart>
+    <ChartPrimaryXAxis ValueType="Syncfusion.Blazor.Charts.ValueType.Category"></ChartPrimaryXAxis>
+    <ChartSeriesCollection>
+        <ChartSeries DataSource="@selectedItems" XName="AssignedDate" YName="TransactionAmount" Type="ChartSeriesType.Line">
+        </ChartSeries>
+    </ChartSeriesCollection>
+</SfChart>
+
 @code {
     private TagSelection tagSelectionRef;
 
     private List<Tag> tags;
 
-    private string[] selectedChips = new string[0];
     private List<ChipItem> chips = new List<ChipItem>();
     private ChipItem chip { set { chips.Add(value); } }
 
     private DateTime? fromDate;
     private DateTime? toDate;
+
+    private List<TodoItem> selectedItems = new List<TodoItem>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -40,7 +50,7 @@
 
     protected async Task CreateChartAsync()
     {
-        var selectedTags = tags.Where(t => selectedChips.Any(m => m == t.Text)).ToList();
+        var selectedTags = tagSelectionRef.GetSelectedTags();
         var selectedTagIds = selectedTags.Any() ? selectedTags.Select(t => t.ID).ToList() : new List<int>();
 
         var itemTagRepo = new ItemTagRepository();
@@ -51,7 +61,11 @@
         var itemRepo = new TodoItemRepository();
         var items = await itemRepo.GetItemsAsync();
 
-        var selectedItems = items.Where(i => i.AssignedDate >= fromDate && i.AssignedDate <= toDate && itemIds.Any(ii => ii == i.ID)).ToList();
+        fromDate = fromDate == null ? DateTime.MinValue : fromDate;
+        toDate = toDate == null ? DateTime.MaxValue : toDate;
+
+        selectedItems.Clear();
+        selectedItems.AddRange(items.Where(i => i.AssignedDate >= fromDate && i.AssignedDate <= toDate && itemIds.Any(ii => ii == i.ID)));
     }
 }
  

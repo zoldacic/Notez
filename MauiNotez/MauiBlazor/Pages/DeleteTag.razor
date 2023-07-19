@@ -6,7 +6,7 @@
     <DialogTemplates>
         <Content> 
 
-            Do you want to delete tag with text "@tag.Text"?
+            Do you want to delete Tag with text "@Tag.Text"?
 
             <DialogButtons>
                 <DialogButton Content="Save" IsPrimary="true" OnClick="@Submit" />
@@ -19,7 +19,7 @@
 @code {
 
     [Parameter] 
-    public Tag tag { get; set; } = new Tag();
+    public Tag Tag { get; set; }
 
     [Parameter]
     public EventCallback OnTagDeleted { get; set; }
@@ -31,7 +31,7 @@
 
         var repo = new TagRepository();
 
-        await repo.DeleteTagAsync(tag);
+        await repo.DeleteTagAsync(Tag);
 
         await OnTagDeleted.InvokeAsync();
     }

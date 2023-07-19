@@ -32,7 +32,7 @@
 @if (hasSelectedTagForEdit)
 {
     <EditTag @ref="editDialog"
-              item="selectedTag"
+              Tag="selectedTag"
               OnTagSaved="@(() => OnEditDialogSubmit())"
               OnTagSaveCancelled="@(() => OnEditDialogCancel())">
     </EditTag>
@@ -41,7 +41,7 @@
 @if (hasSelectedTagForDelete)
 {
     <DeleteTag @ref="deleteDialog"
-                item="selectedTag"
+                Tag="selectedTag"
                 OnTagSaved="@(() => OnDeleteDialogSubmit())"
                 OnTagSaveCancelled="@(() => OnDeleteDialogCancel())">
     </DeleteTag>
@@ -71,15 +71,15 @@
         tags = await repo.GetTagsAsync();
     }
 
-    private void OpenEditDialog(MouseEventArgs args, Tag item)
+    private void OpenEditDialog(MouseEventArgs args, Tag tag)
     {
-        selectedTag = item;
+        selectedTag = tag;
         hasSelectedTagForEdit = true;
     }
 
-    private void OpenDeleteDialog(MouseEventArgs args, Tag item)
+    private void OpenDeleteDialog(MouseEventArgs args, Tag tag)
     {
-        selectedTag = item;
+        selectedTag = tag;
         hasSelectedTagForDelete = true;
     }
 
