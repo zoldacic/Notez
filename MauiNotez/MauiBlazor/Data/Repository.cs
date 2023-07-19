@@ -1,5 +1,5 @@
-﻿using SQLite;
-using TodoSQLite.Models;
+﻿using MauiBlazor.Models;
+using SQLite;
 
 namespace MauiBlazor.Data;
 

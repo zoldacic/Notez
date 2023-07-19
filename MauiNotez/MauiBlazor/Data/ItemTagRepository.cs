@@ -1,4 +1,4 @@
-﻿using TodoSQLite.Models;
+﻿using MauiBlazor.Models;
 
 namespace MauiBlazor.Data;
 

@@ -1,7 +1,7 @@
 ﻿using MauiBlazor.Data;
+using MauiBlazor.Models;
 using SQLite;
 using System.ComponentModel;
-using TodoSQLite.Models;
 
 namespace TodoSQLite.Data;
 public class TodoItemRepository
