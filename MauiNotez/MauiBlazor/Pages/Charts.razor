@@ -20,14 +20,22 @@
 </SfCard>
 
 <SfChart>
-    <ChartPrimaryXAxis ValueType="Syncfusion.Blazor.Charts.ValueType.Category"></ChartPrimaryXAxis>
+    <ChartPrimaryXAxis ValueType="Syncfusion.Blazor.Charts.ValueType.DateTime"></ChartPrimaryXAxis>
     <ChartSeriesCollection>
-        <ChartSeries DataSource="@selectedItems" XName="AssignedDate" YName="TransactionAmount" Type="ChartSeriesType.Line">
+        <ChartSeries DataSource="@selectedItems" XName="@nameof(ChartItem.DateTime)" YName="@nameof(ChartItem.Value)" Type="ChartSeriesType.Line">
+            <ChartMarker Visible="true" Height="10" Width="10"></ChartMarker>
         </ChartSeries>
     </ChartSeriesCollection>
 </SfChart>
 
 @code {
+
+    class ChartItem
+    {
+        public DateTime DateTime { get; set; }
+        public double Value { get; set; }
+    }
+
     private TagSelection tagSelectionRef;
 
     private List<Tag> tags;
@@ -38,7 +46,7 @@
     private DateTime? fromDate;
     private DateTime? toDate;
 
-    private List<TodoItem> selectedItems = new List<TodoItem>();
+    private List<ChartItem> selectedItems = new List<ChartItem>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -65,7 +73,10 @@
         toDate = toDate == null ? DateTime.MaxValue : toDate;
 
         selectedItems.Clear();
-        selectedItems.AddRange(items.Where(i => i.AssignedDate >= fromDate && i.AssignedDate <= toDate && itemIds.Any(ii => ii == i.ID)));
+        selectedItems.AddRange(items
+            .Where(i => i.AssignedDate >= fromDate && i.AssignedDate <= toDate && itemIds.Any(ii => ii == i.ID))
+            .Select(i => new ChartItem() { DateTime = i.AssignedDate.Value, Value = i.TransactionAmount.Value })
+            .OrderBy(c => c.DateTime));
     }
 }
  
