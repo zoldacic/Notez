@@ -20,7 +20,7 @@
 </SfCard>
 
 <SfChart>
-    <ChartPrimaryXAxis ValueType="Syncfusion.Blazor.Charts.ValueType.DateTime"></ChartPrimaryXAxis>
+    <ChartPrimaryXAxis IntervalType="IntervalType.Days" ValueType="Syncfusion.Blazor.Charts.ValueType.DateTime"></ChartPrimaryXAxis>
     <ChartSeriesCollection>
         <ChartSeries DataSource="@selectedItems" XName="@nameof(ChartItem.DateTime)" YName="@nameof(ChartItem.Value)" Type="ChartSeriesType.Line">
             <ChartMarker Visible="true" Height="10" Width="10"></ChartMarker>
@@ -69,12 +69,12 @@
         var itemRepo = new TodoItemRepository();
         var items = await itemRepo.GetItemsAsync();
 
-        fromDate = fromDate == null ? DateTime.MinValue : fromDate;
-        toDate = toDate == null ? DateTime.MaxValue : toDate;
-
         selectedItems.Clear();
         selectedItems.AddRange(items
-            .Where(i => i.AssignedDate >= fromDate && i.AssignedDate <= toDate && itemIds.Any(ii => ii == i.ID))
+            .Where(i => 
+                (fromDate == null || i.AssignedDate >= fromDate) && 
+                (toDate == null || i.AssignedDate <= toDate) && 
+                itemIds.Any(ii => ii == i.ID))
             .Select(i => new ChartItem() { DateTime = i.AssignedDate.Value, Value = i.TransactionAmount.Value })
             .OrderBy(c => c.DateTime));
     }
