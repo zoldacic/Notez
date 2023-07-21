@@ -67,6 +67,7 @@
         <PackageReference Include="Syncfusion.Blazor.Notifications" Version="22.1.38" />
         <PackageReference Include="Syncfusion.Blazor.RichTextEditor" Version="22.1.38" />
         <PackageReference Include="Syncfusion.Blazor.Themes" Version="22.1.38" />
+        <PackageReference Include="Syncfusion.XlsIO.Net.Core" Version="22.1.39" />
     </ItemGroup>
 
 </Project>

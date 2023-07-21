@@ -8,6 +8,7 @@ namespace MauiBlazor.Models
         public int ID { get; set; }
         public ImageSource Image { get; }
         public string Text { get; set; }
+        public string? Value { get; set; }
 
         public Tag() { }
 
