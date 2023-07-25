@@ -4,7 +4,6 @@
 @using Syncfusion.Blazor.Buttons
 @using Syncfusion.Blazor.Calendars
 @using Syncfusion.Blazor.Popups
-@using TodoSQLite.Data;
 @using Syncfusion.Blazor.Inputs
 
 <SfDialog Width="250px" IsModal="true" Visible="true">
@@ -60,6 +59,7 @@
         {
             transactionAmount = Item.TransactionAmount.ToString();
             assignedDate = Item.AssignedDate;
+            StateHasChanged();
         }
 
         await base.OnAfterRenderAsync(firstRender);        
