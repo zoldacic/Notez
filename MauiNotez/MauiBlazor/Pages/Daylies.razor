@@ -16,25 +16,35 @@
 <div style="padding-bottom: 10px">
     <SfCard>
 
-        <TagSelection @ref="tagSelectionRef" item="null" />
+        <TagSelection @ref="tagSelectionRef" item="null" OnTagSelectionChanged="OnFilterChange" />
 
-        <SfDatePicker TValue="DateTime?" Placeholder="Assigned date" CssClass="e-outline" @bind-value="fromDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
-        <SfDatePicker TValue="DateTime?" Placeholder="From" CssClass="e-outline" @bind-value="toDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
+        <SfTextBox TValue="string?" Placeholder="Text" Input="@OnTextFilterChange" CssClass="e-outline" FloatLabelType="@FloatLabelType.Always"></SfTextBox>
+
+        <SfDatePicker TValue="DateTime?" OnChange="@(() => OnFilterChange())" Placeholder="Date from" CssClass="e-outline" @bind-value="fromDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
+        <SfDatePicker TValue="DateTime?" OnChange="@(() => OnFilterChange())" Placeholder="Date to" CssClass="e-outline" @bind-value="toDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
 
         <SfDropDownList TValue="string" TItem="DisplayType" Placeholder="Type of display"></SfDropDownList>
 
-</SfCard>
+    </SfCard>
 </div>
 
 <h2>Search Result</h2>
 
 <SfCard>
-    <SfGrid DataSource="@items" AllowTextWrap="true" AllowPaging="true">
+    <SfGrid DataSource="@filteredItems" AllowTextWrap="true" AllowPaging="true" AllowSorting="true" AllowMultiSorting="true">
         <GridColumns>
-            <GridColumn Field="@nameof(TodoItem.AssignedDate)" HeaderText="Assigned Date" Width="190"></GridColumn>
             <GridColumn Field="@nameof(TodoItem.Name)" HeaderText="Name" Width="190"></GridColumn>
             <GridColumn Field="@nameof(TodoItem.Notes)" HeaderText="Notes" Width="340"></GridColumn>
-            <GridColumn HeaderText="">
+            <GridColumn HeaderText="Tags" HideAtMedia="(min-width: 700px)" Width="190">
+                <Template>
+                    @{
+                        var item = (context as TodoItem);
+                        <TagSelection item="item" ShowOnlySelected=true></TagSelection>
+                    }
+                </Template>
+            </GridColumn>
+            <GridColumn Field="@nameof(TodoItem.AssignedDate)" HideAtMedia="(min-width: 700px)" HeaderText="Assigned Date" Width="190"></GridColumn>
+            <GridColumn HeaderText="" Width="120">
                 <Template>
                     @{
                         var item = (context as TodoItem);
@@ -78,6 +88,7 @@
     public TodoItem selectedItem;
 
     public IEnumerable<TodoItem> items;
+    public IEnumerable<TodoItem> filteredItems;
 
     private EditItem editDialog;
     private DeleteItem deleteDialog;
@@ -87,6 +98,8 @@
 
     private DateTime? fromDate;
     private DateTime? toDate;
+
+    private string? searchText;
 
     public class DisplayType
     {
@@ -100,6 +113,45 @@
         new DisplayType() { ID = 2, Text = "List" },
     };
 
+    protected void OnTextFilterChange(InputEventArgs args)
+    {
+        searchText = args.Value;
+        FilterItems();
+    }
+
+    protected void OnFilterChange()
+    {
+        FilterItems();
+    }
+
+    private void FilterItems()
+    {
+        filteredItems = items;
+
+        if (tagSelectionRef.GetSelectedTags().Any())
+        {
+            var itemTags = allItemTags.Where(it => tagSelectionRef.GetSelectedTags().Any(st => st.ID == it.TagId));
+            filteredItems = filteredItems.Where(i => itemTags.Any(it => it.ItemId == i.ID));
+        }   
+
+        if (fromDate != null)
+        {
+            filteredItems = filteredItems.Where(i => i.AssignedDate is not null && i.AssignedDate >= fromDate);
+        }
+
+        if (toDate != null)
+        {
+            filteredItems = filteredItems.Where(i => i.AssignedDate is not null && i.AssignedDate <= toDate);
+        }
+
+        if (!string.IsNullOrWhiteSpace(searchText))
+        {
+            filteredItems = filteredItems.Where(i => (i.Name != null && i.Name.Contains(searchText, StringComparison.CurrentCultureIgnoreCase)) || (i.Notes != null && i.Notes.Contains(searchText, StringComparison.CurrentCultureIgnoreCase))).ToList();
+        }
+
+        StateHasChanged();
+    }
+    
     protected override async Task OnInitializedAsync()
     {
         await LoadItems();
@@ -110,6 +162,7 @@
         var repo = new TodoItemRepository();
         await repo.Init();
         items = await repo.GetItemsAsync();
+        filteredItems = items;
 
         var tagRepo = new TagRepository();
         allTags = await tagRepo.GetTagsAsync();

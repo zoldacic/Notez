@@ -3,7 +3,7 @@
 @using Syncfusion.Blazor.Buttons;
             
 <div style="margin-bottom:7px">
-    <SfChip @ref="chipsRef" Selection="SelectionType.Multiple" CssClass="e-outline">
+    <SfChip @ref="chipsRef" Selection="SelectionType.Multiple" CssClass="e-outline" Enabled=!ShowOnlySelected SelectedChipsChanged="SelectedChipsChanged">
         <ChipItems>
             @if (tags != null)
             {
@@ -20,6 +20,12 @@
     [Parameter]
     public TodoItem? item { get; set; }
 
+    [Parameter]
+    public bool ShowOnlySelected { get; set; }
+
+    [Parameter]
+    public EventCallback OnTagSelectionChanged { get; set; }
+
     private List<Tag> tags;
 
     private SfChip chipsRef;
@@ -32,6 +38,11 @@
 
         var selectedTags = tags.Where(t => selectedChips.Any(s => s == t.Text)).ToList();
         return selectedTags;
+    }
+
+    protected async Task SelectedChipsChanged()
+    {
+        await OnTagSelectionChanged.InvokeAsync();
     }
 
     protected override async Task OnInitializedAsync()
@@ -67,7 +78,16 @@
                 }
             }
 
-            chipsRef.SelectChips(selectedMudChips.Select(s => s.Text).ToArray());
+            if (ShowOnlySelected)
+            {
+                var chipsToRemove = chipsRef.Chips.Where(c => !selectedMudChips.Any(sc => sc.Text == c.Text));
+                chipsRef.RemoveChips(chipsToRemove.Select(c => c.Text).ToArray());
+            }
+            else
+            {
+                chipsRef.SelectChips(selectedMudChips.Select(s => s.Text).ToArray());
+            }
+            
             StateHasChanged();
         }
 
