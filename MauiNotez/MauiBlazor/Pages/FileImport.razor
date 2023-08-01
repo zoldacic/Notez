@@ -1,5 +1,6 @@
 ﻿@page "/import"
 
+@using MauiBlazor.Data;
 @using MauiBlazor.Models;
 @using Syncfusion.Blazor.Buttons
 @using Syncfusion.Blazor.Cards
@@ -7,75 +8,228 @@
 @using Syncfusion.XlsIO;
 @using System.Dynamic;
 @using System.Data;
+@using TodoSQLite.Data;
 
-<SfCard>
-    <SfUploader>
-        <UploaderEvents ValueChange="@OnFileUploaded"></UploaderEvents>
-    </SfUploader>
+<h2>File import</h2>
 
-    <SfGrid DataSource="@items" AllowTextWrap="true" AllowPaging="true">
-        <GridColumns>
-            <GridColumn Field="@nameof(TodoItem.Name)" HeaderText="Name" Width="190"></GridColumn>
-            <GridColumn Field="@nameof(TodoItem.TransactionAmount)" HeaderText="Transaction Amount" Width="140"></GridColumn>
-        </GridColumns>
-    </SfGrid>
+<div style="padding-bottom: 10px">
 
-    <SfButton Content="Import" IconCss="e-icons e-chevron-down-fill" OnClick="@(x => Import(x))"></SfButton>
-</SfCard>
+    <SfCard>
+        <SfUploader>
+            <UploaderEvents ValueChange="@OnFileUploaded"></UploaderEvents>
+        </SfUploader>       
+
+        @if (importItems != null && importItems.Any())
+        {
+            <SfGrid DataSource="@importItems" AllowTextWrap="true" AllowPaging="true" AllowSorting="true"></SfGrid>
+        }
+
+        <SfButton Content="Preview" IconCss="e-icons e-chevron-down-fill" OnClick="@(x => Preview(x))"></SfButton>
+
+        @if (items is not null) {
+            <h3>@items.Count new items.</h3>
+        }
+        
+        @if (itemsAlreadyExisting is not null)
+        {
+            <h3>@itemsAlreadyExisting.Count already existing items.</h3>
+        }
+    </SfCard>
+
+</div>
+
+<h2>Import Preview</h2>
+
+<div style="padding-bottom: 10px">
+
+    <SfCard>
+        <TagSelection @ref="tagSelectionRef" item="null" />
+
+        <SfGrid DataSource="@items" AllowTextWrap="true" AllowPaging="true" AllowSorting="true">
+            <GridColumns>
+                    <GridColumn Field="@nameof(TodoItem.Name)" HeaderText="Name" Width="190"></GridColumn>
+                    <GridColumn Field="@nameof(TodoItem.Notes)" HeaderText="Notes" Width="340"></GridColumn>
+                    <GridColumn HeaderText="Tags" HideAtMedia="(min-width: 700px)" Width="190">
+                        <Template>
+                            @{
+                                var item = (context as TodoItem);
+                                <TagSelection item="item" ShowOnlySelected=true></TagSelection>
+                            }
+                        </Template>
+                    </GridColumn>
+                    <GridColumn Field="@nameof(TodoItem.AssignedDate)" HideAtMedia="(min-width: 700px)" HeaderText="Assigned Date" Width="190"></GridColumn>
+                    <GridColumn HeaderText="" Width="140">
+                        <Template>
+                            @{
+                                var item = (context as TodoItem);
+                                <div class="image">
+                                    <SfButton Content="Edit" OnClick="@(x => OpenEditDialog(x, item))"></SfButton>
+                                    <SfButton Content="Delete" OnClick="@(x => OpenDeleteDialog(x, item))"></SfButton>
+                                </div>
+                            }
+                        </Template>
+                    </GridColumn>
+                </GridColumns>
+            </SfGrid>
+
+        <SfButton Content="Import" IconCss="e-icons e-chevron-down-fill" OnClick="@(x => Import(x))"></SfButton>
+    </SfCard>
+
+</div>
 
 @code {
     private List<TodoItem> items;
+    private List<TodoItem> itemsAlreadyExisting;
+
+    private string account;
+
+    private TagSelection tagSelectionRef;
+
+    private bool hasSelectedItemForEdit = false;
+    private bool hasSelectedItemForDelete = false;
+
+    private string[] Columns;
+    private List<ExpandoObject> importItems;
+
+    private TodoItem selectedItem;
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            importItems = new List<ExpandoObject>();
+        }
+
+        return base.OnAfterRenderAsync(firstRender);
+    }
 
     private async Task OnFileUploaded(UploadChangeEventArgs args)
     {
         foreach (var file in args.Files)
         {
-            var path = Path.Combine(FileSystem.Current.CacheDirectory, file.FileInfo.Name);
-            ExcelEngine excelEngine = new ExcelEngine();
-            IApplication application = excelEngine.Excel;
-            application.DefaultVersion = ExcelVersion.Excel2016;
+            try
+            {
+                var path = Path.Combine(FileSystem.Current.CacheDirectory, file.FileInfo.Name) + ".tmp";
+                ExcelEngine excelEngine = new ExcelEngine();
+                IApplication application = excelEngine.Excel;
+                application.DefaultVersion = ExcelVersion.Excel2016;
 
+                //create new filestream into above path
+                var openFileStream = File.Create(path);
 
-            //create new filestream into above path
-            var openFileStream = File.Create(path);
+                //write the uploaded memorystream to file stream
+                await file.File.OpenReadStream().CopyToAsync(openFileStream);
+                openFileStream.Close();
 
-            //write the uploaded memorystream to file stream
-            await file.File.OpenReadStream().CopyToAsync(openFileStream);
+                //again open the filstream from that path
+                var fileStream = File.OpenRead(path);
 
-            //again open the filstream from that path
-            var fileStream = File.OpenRead(path);
+                //access the workbook from that filtestream
+                var workbook = application.Workbooks.Open(fileStream);
+                IWorksheet worksheet = workbook.Worksheets[0];
 
-            //access the workbook from that filtestream
-            var workbook = application.Workbooks.Open(fileStream);
-            IWorksheet worksheet = workbook.Worksheets[0];
-            
-            //get datatable from workbook
-            var table = worksheet.ExportDataTable(worksheet.UsedRange, ExcelExportDataTableOptions.ColumnNames);
-            //convert to dynamic list and append to Grid.
-            GenerateListFromTable(table);
+                //get datatable from workbook
+                var table = worksheet.ExportDataTable(worksheet.UsedRange, ExcelExportDataTableOptions.ColumnNames);
+
+                //convert to dynamic list and append to Grid.
+                GenerateImportItemsFromFile(table);
+
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
     }
 
-    string[] Columns;
-    public List<ExpandoObject> CustomerList;
-    public void GenerateListFromTable(DataTable input)
+    private void GenerateImportItemsFromFile(DataTable input)
     {
-        var list = new List<ExpandoObject>();
-        Columns = input.Columns.Cast<DataColumn>()
-                             .Select(x => x.ColumnName)
-                             .ToArray();
-        foreach (DataRow row in input.Rows)
+        var accountRow = input.Rows[3];
+        account = accountRow[0].ToString();
+
+        importItems.Clear();
+
+        var columnNames = input.Rows[6].ItemArray.Select(i => i.ToString()).ToArray();
+        for (var rowNo = 7;rowNo < input.Rows.Count;rowNo++) 
         {
-            System.Dynamic.ExpandoObject e = new System.Dynamic.ExpandoObject();
-            foreach (DataColumn col in input.Columns)
-                e.TryAdd(col.ColumnName, row.ItemArray[col.Ordinal]);
-            list.Add(e);
+            var importItem = new System.Dynamic.ExpandoObject();
+            var row = input.Rows[rowNo];
+
+            foreach (DataColumn column in input.Columns)
+            {
+                importItem.TryAdd(columnNames[column.Ordinal], row.ItemArray[column.Ordinal]);
+            }
+
+            importItems.Add(importItem);
         }
-        CustomerList = list;
     }
 
-    private void Import(MouseEventArgs args)
+    private async Task Preview(MouseEventArgs args)
     {
-        
+        var dynamicItems = importItems.Select(c => (dynamic)c);
+
+        items = dynamicItems.Select(c => new TodoItem()
+        {
+            Account = account,
+            Name = c.Text,
+            TransactionAmount = double.Parse(c.Belopp),
+            AssignedDate = DateTime.Parse(c.Bokförd),
+            TransactionId = c.Verifikationsnummer,
+            IsTemporary = true
+        }).ToList();
+
+        var itemRepo = new TodoItemRepository();
+        await itemRepo.DeleteAllTemporaryItemsAsync();
+
+        var tagRepo = new TagRepository();
+        var tag = await tagRepo.GetTagWithValueAsync("Import");
+
+        if (tag is null)
+        {
+            tag = new Tag() { Text = "Import", Value = "Import" };
+            await tagRepo.SaveTagAsync(tag);
+            
+            tag = await tagRepo.GetTagWithValueAsync("Import");
+        }
+
+        var tags = new List<Tag>() { tag };
+
+        await itemRepo.SaveItemsAsync(items, tags);
+
+        StateHasChanged();
+    }
+
+    private async Task Import(MouseEventArgs args)
+    {
+        var repo = new TodoItemRepository();
+        await repo.SetTemporaryItemsPermanentAsync();
+
+        importItems.Clear();
+        items.Clear();
+
+        StateHasChanged();
+    }
+
+    private void OpenEditDialog(MouseEventArgs args, TodoItem item)
+    {
+        selectedItem = item;
+        hasSelectedItemForEdit = true;
+    }
+
+    private void OpenDeleteDialog(MouseEventArgs args, TodoItem item)
+    {
+        selectedItem = item;
+        hasSelectedItemForDelete = true;
+    }
+
+    private void OnEditDialogSubmit()
+    {
+        hasSelectedItemForEdit = false;
+    }
+
+    private void OnEditDialogCancel()
+    {
+        hasSelectedItemForEdit = false;
     }
 }

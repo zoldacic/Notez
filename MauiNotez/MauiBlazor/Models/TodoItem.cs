@@ -11,4 +11,7 @@ public class TodoItem
     public string Notes { get; set; }
     public bool Done { get; set; }
     public double? TransactionAmount { get; set; }
+    public string TransactionId { get; set; }
+    public string Account { get; set; }
+    public bool IsTemporary { get; set; }
 }

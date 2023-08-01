@@ -1,6 +1,7 @@
 ﻿using MauiBlazor.Data;
 using MauiBlazor.Models;
 using SQLite;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace TodoSQLite.Data;
@@ -24,6 +25,14 @@ public class TodoItemRepository
     public async Task<TodoItem> GetItemAsync(int id)
     {
         return await Repository.Database.Table<TodoItem>().Where(i => i.ID == id).FirstOrDefaultAsync();
+    }
+
+    public async Task SaveItemsAsync(List<TodoItem> items, IList<Tag> tags)
+    {
+        foreach (var item in items) 
+        {
+            await SaveItemAsync(item, tags);
+        }
     }
 
     public async Task SaveItemAsync(TodoItem item, IList<Tag> tags)
@@ -57,5 +66,32 @@ public class TodoItemRepository
     public async Task<int> DeleteItemAsync(TodoItem item)
     {
         return await Repository.Database.DeleteAsync(item);
+    }
+
+    public async Task<int> DeleteAllTemporaryItemsAsync()
+    {
+        var items = (await GetItemsAsync()).Where(i => i.IsTemporary);
+
+        var deleted = 0;
+        foreach(var item in items)
+        {
+            deleted = deleted + await DeleteItemAsync(item);
+        }
+
+        return deleted;
+    }
+
+    public async Task<int> SetTemporaryItemsPermanentAsync()
+    {
+        var items = (await GetItemsAsync()).Where(i => i.IsTemporary);
+
+        var deleted = 0;
+        foreach (var item in items)
+        {
+            item.IsTemporary = false;
+            await Repository.Database.UpdateAsync(item);
+        }
+
+        return deleted;
     }
 }

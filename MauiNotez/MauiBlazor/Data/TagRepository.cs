@@ -22,6 +22,13 @@ public class TagRepository
         return tags.FirstOrDefault();
     }
 
+    public async Task<Tag> GetTagWithValueAsync(string value)
+    {
+        await Init();
+        var tags = await Repository.Database.Table<Tag>().Where(t => t.Value == value).ToListAsync();
+        return tags.FirstOrDefault();
+    }
+
     public async Task SaveTagAsync(Tag tag)
     {
         var otherTagWithSameText = await GetTagWithTextAsync(tag.Text);
