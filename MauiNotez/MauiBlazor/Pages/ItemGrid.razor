@@ -1,0 +1,104 @@
+﻿@using MauiBlazor.Models;
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Grids
+
+    <SfGrid @ref="grid" DataSource="@Items" AllowTextWrap="true" AllowPaging="true" AllowSorting="true" AllowMultiSorting="true">
+        <GridColumns>
+            <GridColumn Field="@nameof(TodoItem.Name)" HeaderText="Name" Width="190"></GridColumn>
+            <GridColumn Field="@nameof(TodoItem.Notes)" HeaderText="Notes" Width="340"></GridColumn>
+            <GridColumn HeaderText="Tags" HideAtMedia="(min-width: 700px)" Width="190">
+                <Template>
+                    @{
+                        var item = (context as TodoItem);
+                        <TagSelection item="item" ShowOnlySelected=true></TagSelection>
+                    }
+                </Template>
+            </GridColumn>
+            <GridColumn Field="@nameof(TodoItem.AssignedDate)" HideAtMedia="(min-width: 700px)" HeaderText="Assigned Date" Width="190"></GridColumn>
+            <GridColumn HeaderText="" Width="140">
+                <Template>
+                    @{
+                        var item = (context as TodoItem);
+                        <div class="image">
+                            <SfButton Content="Edit" OnClick="@(x => OpenEditDialog(x, item))"></SfButton>
+                            <SfButton Content="Delete" OnClick="@(x => OpenDeleteDialog(x, item))"></SfButton>
+                        </div>
+                    }
+                </Template>
+            </GridColumn>
+        </GridColumns>
+    </SfGrid>
+
+    <SfButton Content="Add" IconCss="e-icons e-chevron-down-fill" OnClick="@(x => OpenEditDialog(x, null))"></SfButton>
+
+
+@if (hasSelectedItemForEdit)
+{
+    <EditItem @ref="editDialog"
+              Item="selectedItem"
+              OnItemSaved="@(() => OnEditDialogSubmit())"
+              OnItemSaveCancelled="@(() => OnEditDialogCancel())">
+    </EditItem>
+}
+
+@if (hasSelectedItemForDelete)
+{
+    <DeleteItem @ref="deleteDialog"
+                Item="selectedItem"
+                OnItemSaved="@(() => OnDeleteDialogSubmit())"
+                OnItemSaveCancelled="@(() => OnDeleteDialogCancel())">
+    </DeleteItem>
+}
+
+@code {
+    [Parameter]
+    public IEnumerable<TodoItem> Items { get; set; }
+
+    private SfGrid<TodoItem> grid;
+
+    private TodoItem selectedItem;
+
+    private bool hasSelectedItemForEdit = false;
+    private bool hasSelectedItemForDelete = false;
+
+    private EditItem editDialog;
+    private DeleteItem deleteDialog;
+
+    private void OpenEditDialog(MouseEventArgs args, TodoItem item)
+    {
+        selectedItem = item;
+        hasSelectedItemForEdit = true;
+    }
+
+    private void OpenDeleteDialog(MouseEventArgs args, TodoItem item)
+    {
+        selectedItem = item;
+        hasSelectedItemForDelete = true;
+    }
+
+    private async Task OnEditDialogSubmit()
+    {
+        hasSelectedItemForEdit = false;
+        await grid.RefreshColumnsAsync();
+
+        StateHasChanged();
+    }
+
+    private void OnEditDialogCancel()
+    {
+        hasSelectedItemForEdit = false;
+    }
+
+    private void OnDeleteDialogSubmit()
+    {
+        hasSelectedItemForEdit = false;
+        StateHasChanged();
+
+        grid.Refresh();
+    }
+
+    private void OnDeleteDialogCancel()
+    {
+        hasSelectedItemForEdit = false;
+    }
+}

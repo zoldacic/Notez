@@ -31,67 +31,16 @@
 <h2>Search Result</h2>
 
 <SfCard>
-    <SfGrid DataSource="@filteredItems" AllowTextWrap="true" AllowPaging="true" AllowSorting="true" AllowMultiSorting="true">
-        <GridColumns>
-            <GridColumn Field="@nameof(TodoItem.Name)" HeaderText="Name" Width="190"></GridColumn>
-            <GridColumn Field="@nameof(TodoItem.Notes)" HeaderText="Notes" Width="340"></GridColumn>
-            <GridColumn HeaderText="Tags" HideAtMedia="(min-width: 700px)" Width="190">
-                <Template>
-                    @{
-                        var item = (context as TodoItem);
-                        <TagSelection item="item" ShowOnlySelected=true></TagSelection>
-                    }
-                </Template>
-            </GridColumn>
-            <GridColumn Field="@nameof(TodoItem.AssignedDate)" HideAtMedia="(min-width: 700px)" HeaderText="Assigned Date" Width="190"></GridColumn>
-            <GridColumn HeaderText="" Width="140">
-                <Template>
-                    @{
-                        var item = (context as TodoItem);
-                        <div class="image">
-                            <SfButton Content="Edit" OnClick="@(x => OpenEditDialog(x, item))"></SfButton>
-                            <SfButton Content="Delete" OnClick="@(x => OpenDeleteDialog(x, item))"></SfButton>
-                        </div>
-                    }
-                </Template>
-            </GridColumn>
-        </GridColumns>
-    </SfGrid>
-
-    <SfButton Content="Add" IconCss="e-icons e-chevron-down-fill" OnClick="@(x => OpenEditDialog(x, null))"></SfButton>
+    <ItemGrid @ref="itemGridRef" Items="filteredItems"></ItemGrid>
 </SfCard>
-
-@if (hasSelectedItemForEdit)
-{
-    <EditItem @ref="editDialog"
-              Item="selectedItem"
-              OnItemSaved="@(() => OnEditDialogSubmit())"
-              OnItemSaveCancelled="@(() => OnEditDialogCancel())">
-    </EditItem>
-}
-
-@if (hasSelectedItemForDelete)
-{
-    <DeleteItem @ref="deleteDialog"
-              Item="selectedItem"
-              OnItemSaved="@(() => OnDeleteDialogSubmit())"
-              OnItemSaveCancelled="@(() => OnDeleteDialogCancel())">
-    </DeleteItem>
-}
 
 @code {
     private TagSelection tagSelectionRef;
 
-    private bool hasSelectedItemForEdit = false;
-    private bool hasSelectedItemForDelete = false;
-
-    public TodoItem selectedItem;
+    private ItemGrid itemGridRef;
 
     public IEnumerable<TodoItem> items;
     public IEnumerable<TodoItem> filteredItems;
-
-    private EditItem editDialog;
-    private DeleteItem deleteDialog;
 
     private List<Tag> allTags;
     private List<ItemTag> allItemTags;
@@ -169,37 +118,5 @@
 
         var itemTagRepo = new ItemTagRepository();
         allItemTags = await itemTagRepo.GetItemTagsAsync();
-    }
-
-    private void OpenEditDialog(MouseEventArgs args, TodoItem item)
-    {
-        selectedItem = item;
-        hasSelectedItemForEdit = true;
-    }
-
-    private void OpenDeleteDialog(MouseEventArgs args, TodoItem item)
-    {
-        selectedItem = item;
-        hasSelectedItemForDelete = true;
-    }
-
-    private void OnEditDialogSubmit()
-    {
-        hasSelectedItemForEdit = false;
-    }
-
-    private void OnEditDialogCancel()
-    {
-        hasSelectedItemForEdit = false;
-    }
-
-    private void OnDeleteDialogSubmit()
-    {
-        hasSelectedItemForEdit = false;
-    }
-
-    private void OnDeleteDialogCancel()
-    {
-        hasSelectedItemForEdit = false;
     }
 }

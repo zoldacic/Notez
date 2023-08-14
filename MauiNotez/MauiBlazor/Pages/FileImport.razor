@@ -5,6 +5,7 @@
 @using Syncfusion.Blazor.Buttons
 @using Syncfusion.Blazor.Cards
 @using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Notifications;
 @using Syncfusion.XlsIO;
 @using System.Dynamic;
 @using System.Data;
@@ -26,14 +27,16 @@
 
         <SfButton Content="Preview" IconCss="e-icons e-chevron-down-fill" OnClick="@(x => Preview(x))"></SfButton>
 
-        @if (items is not null) {
+        <SfToast ID="toast_default" @ref="toastObj" Title="" Content="@toastContent" Timeout="2000"></SfToast>
+
+@*         @if (items is not null) {
             <h3>@items.Count new items.</h3>
         }
         
         @if (itemsAlreadyExisting is not null)
         {
             <h3>@itemsAlreadyExisting.Count already existing items.</h3>
-        }
+        } *@
     </SfCard>
 
 </div>
@@ -43,47 +46,36 @@
 <div style="padding-bottom: 10px">
 
     <SfCard>
-        <TagSelection @ref="tagSelectionRef" item="null" />
-
-        <SfGrid DataSource="@items" AllowTextWrap="true" AllowPaging="true" AllowSorting="true">
-            <GridColumns>
-                    <GridColumn Field="@nameof(TodoItem.Name)" HeaderText="Name" Width="190"></GridColumn>
-                    <GridColumn Field="@nameof(TodoItem.Notes)" HeaderText="Notes" Width="340"></GridColumn>
-                    <GridColumn HeaderText="Tags" HideAtMedia="(min-width: 700px)" Width="190">
-                        <Template>
-                            @{
-                                var item = (context as TodoItem);
-                                <TagSelection item="item" ShowOnlySelected=true></TagSelection>
-                            }
-                        </Template>
-                    </GridColumn>
-                    <GridColumn Field="@nameof(TodoItem.AssignedDate)" HideAtMedia="(min-width: 700px)" HeaderText="Assigned Date" Width="190"></GridColumn>
-                    <GridColumn HeaderText="" Width="140">
-                        <Template>
-                            @{
-                                var item = (context as TodoItem);
-                                <div class="image">
-                                    <SfButton Content="Edit" OnClick="@(x => OpenEditDialog(x, item))"></SfButton>
-                                    <SfButton Content="Delete" OnClick="@(x => OpenDeleteDialog(x, item))"></SfButton>
-                                </div>
-                            }
-                        </Template>
-                    </GridColumn>
-                </GridColumns>
-            </SfGrid>
+        <ItemGrid Items="items"></ItemGrid>
 
         <SfButton Content="Import" IconCss="e-icons e-chevron-down-fill" OnClick="@(x => Import(x))"></SfButton>
     </SfCard>
 
 </div>
 
+@if (hasSelectedItemForEdit)
+{
+    <EditItem @ref="editDialog"
+              Item="selectedItem"
+              OnItemSaved="@(() => OnEditDialogSubmit())"
+              OnItemSaveCancelled="@(() => OnEditDialogCancel())">
+    </EditItem>
+}
+
+@if (hasSelectedItemForDelete)
+{
+    <DeleteItem @ref="deleteDialog"
+                Item="selectedItem"
+                OnItemSaved="@(() => OnDeleteDialogSubmit())"
+                OnItemSaveCancelled="@(() => OnDeleteDialogCancel())">
+    </DeleteItem>
+}
+
 @code {
     private List<TodoItem> items;
     private List<TodoItem> itemsAlreadyExisting;
 
     private string account;
-
-    private TagSelection tagSelectionRef;
 
     private bool hasSelectedItemForEdit = false;
     private bool hasSelectedItemForDelete = false;
@@ -92,6 +84,12 @@
     private List<ExpandoObject> importItems;
 
     private TodoItem selectedItem;
+
+    private EditItem editDialog;
+    private DeleteItem deleteDialog;
+
+    private SfToast toastObj;
+    private string toastContent;
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
@@ -169,7 +167,7 @@
     {
         var dynamicItems = importItems.Select(c => (dynamic)c);
 
-        items = dynamicItems.Select(c => new TodoItem()
+        var unsavedItems = dynamicItems.Select(c => new TodoItem()
         {
             Account = account,
             Name = c.Text,
@@ -189,13 +187,18 @@
         {
             tag = new Tag() { Text = "Import", Value = "Import" };
             await tagRepo.SaveTagAsync(tag);
-            
+
             tag = await tagRepo.GetTagWithValueAsync("Import");
         }
 
         var tags = new List<Tag>() { tag };
 
-        await itemRepo.SaveItemsAsync(items, tags);
+        await itemRepo.CreateTemporaryItemsAsync(unsavedItems, tags);
+
+        items = await itemRepo.GetTemporaryItemsAsync();
+
+        toastContent = $"Added {items.Count} items";
+        await toastObj.ShowAsync();
 
         StateHasChanged();
     }
@@ -226,9 +229,21 @@
     private void OnEditDialogSubmit()
     {
         hasSelectedItemForEdit = false;
+        StateHasChanged();
     }
 
     private void OnEditDialogCancel()
+    {
+        hasSelectedItemForEdit = false;
+    }
+
+    private void OnDeleteDialogSubmit()
+    {
+        hasSelectedItemForEdit = false;
+        StateHasChanged();
+    }
+
+    private void OnDeleteDialogCancel()
     {
         hasSelectedItemForEdit = false;
     }

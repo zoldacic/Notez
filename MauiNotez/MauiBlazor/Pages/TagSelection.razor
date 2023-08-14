@@ -55,42 +55,53 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && item != null)
+        if (item != null)
         {
-            var itemTagsRepo = new ItemTagRepository();
-
-            var itemTags = await itemTagsRepo.GetItemTagsForItemAsync(item.ID);
-
-            var selectedMudChips = new List<ChipItem>();
-            foreach (var itemTag in itemTags)
+            if (firstRender)
             {
-                var tag = tags.FirstOrDefault(t => t.ID == itemTag.TagId);
+                await SetSelectedTagsAsync();
 
-                if (tag is null)
-                {
-                    // This ItemTag should not exist - Delete it
-                    await itemTagsRepo.DeleteItemTagAsync(itemTag);
-                }
-                else
-                {
-                    var mudChip = chips.FirstOrDefault(m => m.Text == tag.Text);
-                    selectedMudChips.Add(mudChip);
-                }
+                StateHasChanged();
             }
+        }
 
-            if (ShowOnlySelected)
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    public async Task SetSelectedTagsAsync()
+    {
+        var itemTagsRepo = new ItemTagRepository();
+
+        var itemTags = await itemTagsRepo.GetItemTagsForItemAsync(item.ID);
+
+        var selectedMudChips = new List<ChipItem>();
+        foreach (var itemTag in itemTags)
+        {
+            var tag = tags.FirstOrDefault(t => t.ID == itemTag.TagId);
+
+            if (tag is null)
+            {
+                // This ItemTag should not exist - Delete it
+                await itemTagsRepo.DeleteItemTagAsync(itemTag);
+            }
+            else
+            {
+                var mudChip = chips.FirstOrDefault(m => m.Text == tag.Text);
+                selectedMudChips.Add(mudChip);
+            }
+        }
+
+        if (ShowOnlySelected)
+        {
+            if (chipsRef.Chips != null)
             {
                 var chipsToRemove = chipsRef.Chips.Where(c => !selectedMudChips.Any(sc => sc.Text == c.Text));
                 chipsRef.RemoveChips(chipsToRemove.Select(c => c.Text).ToArray());
             }
-            else
-            {
-                chipsRef.SelectChips(selectedMudChips.Select(s => s.Text).ToArray());
-            }
-            
-            StateHasChanged();
         }
-
-        await base.OnAfterRenderAsync(firstRender);
+        else
+        {
+            chipsRef.SelectChips(selectedMudChips.Select(s => s.Text).ToArray());
+        }
     }
 }
