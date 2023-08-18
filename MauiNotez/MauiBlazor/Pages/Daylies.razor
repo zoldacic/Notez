@@ -1,8 +1,9 @@
-@page "/daylies"
+    @page "/daylies"
 
 @using MauiBlazor.Data;
 @using MauiBlazor.Models;
 @using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Layouts
 @using TodoSQLite.Data;
 @using System.Net.Http.Json
 @using Syncfusion.Blazor.Buttons;
@@ -11,29 +12,32 @@
 @using Syncfusion.Blazor.Grids;
 @using Syncfusion.Blazor.Calendars;
 
-<h2>Filter</h2>
+ <SfDashboardLayout>
+    <DashboardLayoutPanels>
+        <DashboardLayoutPanel>
+            <HeaderTemplate><div>Filter</div></HeaderTemplate>
+            <ContentTemplate>
 
-<div style="padding-bottom: 10px">
-    <SfCard>
+                        <TagSelection @ref="tagSelectionRef" item="null" OnTagSelectionChanged="OnFilterChange" />
 
-        <TagSelection @ref="tagSelectionRef" item="null" OnTagSelectionChanged="OnFilterChange" />
+                        <SfTextBox TValue="string?" Placeholder="Text" Input="@OnTextFilterChange" CssClass="e-outline" FloatLabelType="@FloatLabelType.Always"></SfTextBox>
 
-        <SfTextBox TValue="string?" Placeholder="Text" Input="@OnTextFilterChange" CssClass="e-outline" FloatLabelType="@FloatLabelType.Always"></SfTextBox>
+                        <SfDatePicker TValue="DateTime?" OnChange="@(() => OnFilterChange())" Placeholder="Date from" CssClass="e-outline" @bind-value="fromDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
+                        <SfDatePicker TValue="DateTime?" OnChange="@(() => OnFilterChange())" Placeholder="Date to" CssClass="e-outline" @bind-value="toDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
 
-        <SfDatePicker TValue="DateTime?" OnChange="@(() => OnFilterChange())" Placeholder="Date from" CssClass="e-outline" @bind-value="fromDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
-        <SfDatePicker TValue="DateTime?" OnChange="@(() => OnFilterChange())" Placeholder="Date to" CssClass="e-outline" @bind-value="toDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
+                        <SfDropDownList TValue="string" TItem="DisplayType" Placeholder="Type of display"></SfDropDownList>
 
-        <SfDropDownList TValue="string" TItem="DisplayType" Placeholder="Type of display"></SfDropDownList>
-
-    </SfCard>
-</div>
-
-<h2>Search Result</h2>
-
-<SfCard>
-    <ItemGrid @ref="itemGridRef" Items="filteredItems"></ItemGrid>
-</SfCard>
-
+            </ContentTemplate>
+            </DashboardLayoutPanel>
+            <DashboardLayoutPanel>
+                <HeaderTemplate><div>Search Result</div></HeaderTemplate>
+                <ContentTemplate>
+                        <ItemGrid @ref="itemGridRef" Items="filteredItems"></ItemGrid>
+                </ContentTemplate>
+        </DashboardLayoutPanel>
+    </DashboardLayoutPanels>
+    </SfDashboardLayout>
+ 
 @code {
     private TagSelection tagSelectionRef;
 
