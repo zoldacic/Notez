@@ -7,8 +7,8 @@
 
 @inject NavigationManager NavigationManager
 
-<div class="semi-circle e-card">
-    <SfButton Content="Dailies" IsPrimary="false" class="button-menu-item" OnClick="@((MouseEventArgs args) => OnMenuItemSelect("/daylies"))"></SfButton>
+<div class="e-card e-round-corner">
+    <SfButton Content="Dailies" CssClass="e-round" IsPrimary="false" class="button-menu-item" OnClick="@((MouseEventArgs args) => OnMenuItemSelect("/daylies"))"></SfButton>
     <SfButton Content="Tags" IsPrimary="false" class="button-menu-item" OnClick="@((MouseEventArgs args) => OnMenuItemSelect("/tags"))"></SfButton>
     <SfButton Content="Charts" IsPrimary="false" class="button-menu-item" OnClick="@((MouseEventArgs args) => OnMenuItemSelect("/charts"))"></SfButton>
     <SfButton Content="Import" IsPrimary="false" class="button-menu-item" OnClick="@((MouseEventArgs args) => OnMenuItemSelect("/import"))"></SfButton>

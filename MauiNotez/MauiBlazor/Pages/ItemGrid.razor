@@ -50,7 +50,26 @@
     </DeleteItem>
 }
 
+<style>
+    .e-grid {
+        background-color: transparent;
+        opacity: 1;
+    }
+
+    .e-grid .e-table {
+        background-color: transparent;
+        opacity: 1;
+    }
+
+    .e-grid .e-gridheader {
+        background-color: transparent;
+        opacity: 1;
+    }
+
+</style>
+
 @code {
+
     [Parameter]
     public IEnumerable<TodoItem> Items { get; set; }
 

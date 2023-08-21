@@ -1,7 +1,100 @@
 ﻿@page "/"
+@using MauiBlazor.Models;
+@using Syncfusion.Blazor.Layouts;
+@using TodoSQLite.Data;
 
-<h1>Hello, world!</h1>
+ <SfDashboardLayout Columns="6" CellSpacing="@(new double[]{ 10 ,10 })">
+    <DashboardLayoutPanels>
 
-Welcome to your new app.
+        <DashboardLayoutPanel Id="DaylysPanel" SizeX="3" SizeY="1" >
+            <HeaderTemplate>5 latest daylys</HeaderTemplate>
+            <ContentTemplate>
+                <div @onclick="OpenDaylysPanel">
+                <ItemGrid Items="items"></ItemGrid>
+                </div>
+            </ContentTemplate>
+        </DashboardLayoutPanel>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+        <DashboardLayoutPanel Id="Panel2" SizeX="1" SizeY="1">
+                <HeaderTemplate><div>Search Result</div></HeaderTemplate>
+                <ContentTemplate>
+                    <NavLink href="/daylies">Daaaaaaaaaaaaaylys</NavLink>
+                </ContentTemplate>
+        </DashboardLayoutPanel>
+
+    </DashboardLayoutPanels>
+    </SfDashboardLayout>
+
+<style>
+    /* .e-panel-content {
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    .e-panel {
+        background-color:darkblue;
+        border-radius: 100px;
+    } */
+
+    .e-dashboardlayout.e-control .e-panel .e-panel-container .e-panel-header {
+        margin: 0px auto 0px 0px;
+        font-size: 1.125rem;
+        line-height: 1.625;
+        font-family: "Plus Jakarta Display", Helvetica, Arial, sans-serif;
+        opacity: 1;
+        text-transform: none;
+        vertical-align: unset;
+        text-decoration: none;
+        color: rgb(255, 255, 255);
+        font-weight: 700;
+    }
+
+    .e-dashboardlayout.e-control .e-panel {
+        opacity: 1;
+        background: transparent;
+        border: 0px;
+    }
+
+    .e-dashboardlayout.e-control .e-panel .e-panel-container {
+            color: rgba(0, 0, 0, 0.87);
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(120px);
+            position: relative;
+            min-width: 0px;
+            overflow-wrap: break-word;
+            box-shadow: rgba(0, 0, 0, 0.05) 0rem 1.25rem 1.6875rem 0rem;
+            height: 340px;
+            transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+            overflow: hidden;
+            background: linear-gradient(127.09deg, rgba(6, 11, 40, 0.94) 19.41%, rgba(10, 14, 35, 0.49) 76.65%) border-box;
+            padding: 22px;
+            border-width: 0px;
+            border-style: solid;
+            border-color: rgba(0, 0, 0, 0.125);
+            border-image: initial;
+            border-radius: 1.25rem;
+            opacity: 0.8;
+    }
+</style>
+
+@code {
+    private List<TodoItem> items; 
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadItems();
+    }
+
+    protected async Task LoadItems()
+    {
+        var repo = new TodoItemRepository();
+        await repo.Init();
+        items = (await repo.GetItemsAsync()).OrderByDescending(i => i.AssignedDate).Take(5).ToList();
+    }
+
+    private void OpenDaylysPanel(MouseEventArgs args)
+    {
+        
+    }
+}

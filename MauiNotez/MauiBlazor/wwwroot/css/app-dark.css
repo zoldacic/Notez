@@ -2,7 +2,8 @@
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    background-color: #000022;
+    /*background-color: #000022;*/
+    background: url(https://demos.creative-tim.com/vision-ui-dashboard-react/static/media/body-background.9e7d96f6.png) 0% 0%;
     color: white;
 }
 
