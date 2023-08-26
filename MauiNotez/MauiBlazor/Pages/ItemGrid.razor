@@ -4,8 +4,21 @@
 
     <SfGrid @ref="grid" DataSource="@Items" AllowTextWrap="true" AllowPaging="true" AllowSorting="true" AllowMultiSorting="true">
         <GridColumns>
-            <GridColumn Field="@nameof(TodoItem.Name)" HeaderText="Name" Width="190"></GridColumn>
-            <GridColumn Field="@nameof(TodoItem.Notes)" HeaderText="Notes" Width="340"></GridColumn>
+            <GridColumn Field="Text" HeaderText="Name" Width="340">
+                <Template>
+                    @{
+                        var item = (context as TodoItem);
+                    <i>@item.Name</i>
+
+                    <br />
+                    <br />
+
+                    <div>
+                        @item.Notes
+                    </div>
+                    }
+                </Template>
+            </GridColumn>
             <GridColumn HeaderText="Tags" HideAtMedia="(min-width: 700px)" Width="190">
                 <Template>
                     @{
@@ -51,20 +64,25 @@
 }
 
 <style>
-    .e-grid {
-        background-color: transparent;
-        opacity: 1;
-    }
-
+     /* .e-grid {
+        background-color: green;
+    
+    } */
+    
     .e-grid .e-table {
-        background-color: transparent;
-        opacity: 1;
+        background-color: rgba(20, 24, 95, 0.9);
+    
     }
-
+    /*
     .e-grid .e-gridheader {
-        background-color: transparent;
-        opacity: 1;
-    }
+        background-color: green;
+    
+    } */
+
+ /*    .e-gridcontent {
+        background-color: green;
+   
+    } */
 
 </style>
 

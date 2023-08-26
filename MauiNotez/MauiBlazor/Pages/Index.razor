@@ -6,7 +6,7 @@
  <SfDashboardLayout Columns="6" CellSpacing="@(new double[]{ 10 ,10 })">
     <DashboardLayoutPanels>
 
-        <DashboardLayoutPanel Id="DaylysPanel" SizeX="3" SizeY="1" >
+        <DashboardLayoutPanel Id="DaylysPanel" SizeX="3" SizeY="2" >
             <HeaderTemplate>5 latest daylys</HeaderTemplate>
             <ContentTemplate>
                 <div @onclick="OpenDaylysPanel">
@@ -69,9 +69,9 @@
             overflow: hidden;
             background: linear-gradient(127.09deg, rgba(6, 11, 40, 0.94) 19.41%, rgba(10, 14, 35, 0.49) 76.65%) border-box;
             padding: 22px;
-            border-width: 0px;
+            border-width: 5px;
             border-style: solid;
-            border-color: rgba(0, 0, 0, 0.125);
+            border-color: rgba(20, 24, 95, 0.9);
             border-image: initial;
             border-radius: 1.25rem;
             opacity: 0.8;
