@@ -1,5 +1,5 @@
 ﻿
-
+/* Dashboard */
 .e-dashboardlayout.e-control .e-panel .e-panel-container .e-panel-header {
     margin: 0px auto 0px 0px;
     font-size: 1.125rem;
@@ -20,32 +20,47 @@
     border: 0px;
 }
 
-    .e-dashboardlayout.e-control .e-panel .e-panel-container {
-        color: rgba(0, 0, 0, 0.87);
-        display: flex;
-        flex-direction: column;
-        backdrop-filter: blur(120px);
-        position: relative;
-        min-width: 0px;
-        overflow-wrap: break-word;
-        box-shadow: rgba(0, 0, 0, 0.05) 0rem 1.25rem 1.6875rem 0rem;
-        height: 100%;
-        transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-        overflow: hidden;
-        background: linear-gradient(127.09deg, rgba(6, 11, 40, 0.94) 19.41%, rgba(10, 14, 35, 0.49) 76.65%) border-box;
-        padding: 22px;
-        border-width: 5px;
-        border-style: solid;
-        border-color: rgba(20, 24, 95, 0.9);
-        border-image: initial;
-        border-radius: 1.25rem;
-        opacity: 0.8;
-    }
+.e-dashboardlayout.e-control .e-panel .e-panel-container {
+    color: rgba(0, 0, 0, 0.87);
+    display: flex;
+    flex-direction: column;
+    backdrop-filter: blur(120px);
+    position: relative;
+    min-width: 0px;
+    overflow-wrap: break-word;
+    box-shadow: rgba(0, 0, 0, 0.05) 0rem 1.25rem 1.6875rem 0rem;
+    height: 100%;
+    transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    overflow: hidden;
+    background: linear-gradient(127.09deg, rgba(6, 11, 40, 0.94) 19.41%, rgba(10, 14, 35, 0.49) 76.65%) border-box;
+    padding: 22px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: rgba(20, 24, 95, 0.9);
+    border-image: initial;
+    border-radius: 1.25rem;
+    opacity: 0.8;
+}
 
+/* Grid */
 .e-grid .e-table {
     background-color: rgba(20, 24, 95, 0.9);
 }
 
 .e-grid .e-headercell, .e-grid .e-detailheadercell {
     background-color: rgba(20, 24, 95, 0.9);
+}
+
+/* Card */
+.e-card, .e-card:hover {
+    background-color: rgba(20, 24, 95, 0.9);
+}
+
+/* Button */
+.e-control .e-btn {
+    background-color: rgba(50, 54, 145, 0.9);
+    padding: 5px;
+    margin: 0px;
+    min-width: 25px;
+
 }
