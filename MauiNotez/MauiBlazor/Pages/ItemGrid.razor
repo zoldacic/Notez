@@ -2,16 +2,19 @@
 @using Syncfusion.Blazor.Buttons
 @using Syncfusion.Blazor.Grids
 
-    <SfGrid @ref="grid" DataSource="@Items" AllowTextWrap="true" AllowPaging="true" AllowSorting="true" AllowMultiSorting="true">
+<SfGrid @ref="grid" DataSource="@Items" AllowTextWrap="true" AllowSorting="true" AllowMultiSorting="true">
         <GridColumns>
             <GridColumn Field="Text" HeaderText="Name" Width="340">
                 <Template>
                     @{
                         var item = (context as TodoItem);
-                    <i>@item.Name</i>
 
-                    <br />
-                    <br />
+                    <p style="text-align:left;">
+                        <i>@item.Name</i>
+                        <span style="float:right;">
+                            <i>@item.AssignedDate.Value.ToString("yyyy-MM-dd")</i>
+                        </span>
+                    </p>
 
                     <div>
                         @item.Notes
@@ -19,7 +22,7 @@
                     }
                 </Template>
             </GridColumn>
-            <GridColumn HeaderText="Tags" HideAtMedia="(min-width: 700px)" Width="190">
+            <GridColumn HeaderText="Tags" HideAtMedia="(min-width: 700px)" Width="150">
                 <Template>
                     @{
                         var item = (context as TodoItem);
@@ -27,23 +30,29 @@
                     }
                 </Template>
             </GridColumn>
-            <GridColumn Field="@nameof(TodoItem.AssignedDate)" HideAtMedia="(min-width: 700px)" HeaderText="Assigned Date" Width="190"></GridColumn>
-            <GridColumn HeaderText="" Width="140">
-                <Template>
-                    @{
-                        var item = (context as TodoItem);
-                        <div class="image">
-                            <SfButton Content="Edit" OnClick="@(x => OpenEditDialog(x, item))"></SfButton>
-                            <SfButton Content="Delete" OnClick="@(x => OpenDeleteDialog(x, item))"></SfButton>
-                        </div>
-                    }
-                </Template>
-            </GridColumn>
+            @* <GridColumn Field="@nameof(TodoItem.AssignedDate)" HideAtMedia="(min-width: 700px)" HeaderText="Assigned Date" Width="190"></GridColumn> *@
+
+            @if (!ShowSimplified)
+            {
+                <GridColumn HeaderText="" Width="140">
+                    <Template>
+                        @{
+                            var item = (context as TodoItem);
+                            <div class="image">
+                                <SfButton Content="Edit" OnClick="@(x => OpenEditDialog(x, item))"></SfButton>
+                                <SfButton Content="Delete" OnClick="@(x => OpenDeleteDialog(x, item))"></SfButton>
+                            </div>
+                        }
+                    </Template>
+                </GridColumn>
+            }
         </GridColumns>
     </SfGrid>
 
+@if (!ShowSimplified)
+{
     <SfButton Content="Add" IconCss="e-icons e-chevron-down-fill" OnClick="@(x => OpenEditDialog(x, null))"></SfButton>
-
+} 
 
 @if (hasSelectedItemForEdit)
 {
@@ -71,8 +80,16 @@
     
     .e-grid .e-table {
         background-color: rgba(20, 24, 95, 0.9);
-    
     }
+
+    /* .e-columnheader {
+        background-color: rgba(20, 24, 95, 0.9);
+    } */
+
+    .e-grid .e-headercell, .e-grid .e-detailheadercell {
+        background-color: rgba(20, 24, 95, 0.9);
+    }
+
     /*
     .e-grid .e-gridheader {
         background-color: green;
@@ -91,6 +108,15 @@
     [Parameter]
     public IEnumerable<TodoItem> Items { get; set; }
 
+    [Parameter]
+    public bool ShowSimplified { get; set; }
+
+    [Parameter]
+    public bool DisablePaging { get; set; }
+
+    // [Parameter]
+    // public int MaxItems { get; set; }
+
     private SfGrid<TodoItem> grid;
 
     private TodoItem selectedItem;
@@ -100,6 +126,11 @@
 
     private EditItem editDialog;
     private DeleteItem deleteDialog;
+
+    private void OnAfterRender(bool firstRender)
+    {
+        grid.AllowPaging = !DisablePaging;
+    }
 
     private void OpenEditDialog(MouseEventArgs args, TodoItem item)
     {
