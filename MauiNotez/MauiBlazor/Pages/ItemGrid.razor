@@ -17,7 +17,14 @@
                     </p>
 
                     <div>
-                        @item.Notes
+                    @{
+                        if (item.Notes != null)
+                        {
+                                var text = item.Notes.Replace("\n", "<br />");
+                                <p>@text</p>
+                        } 
+                    }
+                        
                     </div>
                     }
                 </Template>
