@@ -61,7 +61,7 @@
         </GridColumns>
     </SfGrid>
 
-@if (!ShowSimplified)
+@if (!ShowSimplified && HasAddButton)
 {
     <SfButton Content="Add" IconCss="e-icons e-chevron-down-fill" OnClick="@(x => OpenEditDialog(x, null))"></SfButton>
 } 
@@ -96,6 +96,9 @@
 
     [Parameter]
     public bool ShowSimplified { get; set; }
+
+    [Parameter]
+    public bool HasAddButton { get; set; } = true;
 
     [Parameter]
     public bool DisablePaging { get; set; }
