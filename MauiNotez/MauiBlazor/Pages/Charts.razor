@@ -9,7 +9,7 @@
 
 <SfCard>
     <CardContent>
-        <SfDatePicker TValue="DateTime?" Format="yyyy-MM-dd" OnChange="OnChangeStartDate" Placeholder="From date" CssClass="e-outline" @bind-value="fromDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>0
+        <SfDatePicker TValue="DateTime?" Format="yyyy-MM-dd" Placeholder="From date" CssClass="e-outline" @bind-value="fromDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>0
         <SfDatePicker TValue="DateTime?" Format="yyyy-MM-dd" Placeholder="To date" CssClass="e-outline" @bind-value="toDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
 
         <TagSelection @ref="tagSelectionRef" item="null" />
@@ -28,11 +28,6 @@
 </SfChart>
 
 @code {
-
-    void OnChangeStartDate(Microsoft.AspNetCore.Components.ChangeEventArgs args)
-    {
-        var a = args.Value;
-    }
 
     class ChartItem
     {
