@@ -1,5 +1,6 @@
 ﻿using MauiBlazor.Data;
 using Syncfusion.Blazor;
+using System.Globalization;
 
 namespace MauiBlazor;
 
@@ -14,10 +15,15 @@ public static class MauiProgram
 		builder.Services.AddMauiBlazorWebView();
 		builder.Services.AddSyncfusionBlazor();
 
+
 #if DEBUG
 		builder.Services.AddBlazorWebViewDeveloperTools();
 #endif
 		builder.Services.AddSingleton<WeatherForecastService>();
-		return builder.Build();
+
+        CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("sv-SE");
+        CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("sv-SE");
+
+        return builder.Build();
 	}
 }

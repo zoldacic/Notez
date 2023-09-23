@@ -12,6 +12,12 @@
 @using Syncfusion.Blazor.Grids;
 @using Syncfusion.Blazor.Calendars;
 
+<Navigation />
+
+<h2>Dailys</h2>
+
+<hr />
+
 <h2>Filter</h2>
 
 <div style="padding-bottom: 10px">
@@ -120,4 +126,6 @@
         var itemTagRepo = new ItemTagRepository();
         allItemTags = await itemTagRepo.GetItemTagsAsync();
     }
+
+    
 }

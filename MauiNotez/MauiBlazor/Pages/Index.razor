@@ -6,18 +6,17 @@
 
 @inject NavigationManager NavigationManager
 
+<Navigation />
+
+<h2>Dashboard</h2>
+
  <SfDashboardLayout Columns="6" CellSpacing="@(new double[]{ 10 ,10 })">
     <DashboardLayoutPanels>
 
-        <DashboardLayoutPanel Id="DaylysPanel" SizeX="3" SizeY="2" >
+        <DashboardLayoutPanel Id="DaylysPanel" SizeX="4" SizeY="2" >
             <HeaderTemplate>    
                 <p style="text-align:left;">
-                    5 latest daylys
-
-                    <span style="float:right;margin-left:5px;">
-                        <SfButton OnClick="OpenDailys">D</SfButton>
-                        <SfButton OnClick="OpenImport">I</SfButton>                        
-                    </span>
+                    5 latest dailys      
                 </p>
             </HeaderTemplate>
             <ContentTemplate>
@@ -27,7 +26,7 @@
             </ContentTemplate>
         </DashboardLayoutPanel>
 
-        <DashboardLayoutPanel Id="Panel2" SizeX="1" SizeY="2">
+        <DashboardLayoutPanel Id="Panel2" SizeX="2" SizeY="2">
                 <HeaderTemplate><div>Search Result</div></HeaderTemplate>
                 <ContentTemplate>
                     <NavLink href="/daylies">Daaaaaaaaaaaaaylys</NavLink>
@@ -54,15 +53,5 @@
         var repo = new TodoItemRepository();
         await repo.Init();
         items = (await repo.GetItemsAsync()).OrderByDescending(i => i.AssignedDate).Take(3).ToList();
-    }
-
-    private void OpenDailys(MouseEventArgs args)
-    {
-        NavigationManager.NavigateTo("/daylies");
-    }
-
-    private void OpenImport(MouseEventArgs args)
-    {
-        NavigationManager.NavigateTo("/import");
     }
 }

@@ -2,6 +2,11 @@
 @using Syncfusion.Blazor.Buttons
 @using Syncfusion.Blazor.Grids
 
+@if (!ShowSimplified && Items != null && Items.Count() > 5)
+{
+    <SfButton Content="Add" IconCss="e-icons e-chevron-down-fill" OnClick="@(x => OpenEditDialog(x, null))"></SfButton>
+}
+
 <SfGrid @ref="grid" DataSource="@Items" AllowTextWrap="true" AllowSorting="true" AllowMultiSorting="true">
         <GridColumns>
             <GridColumn Field="Text" HeaderText="Name" Width="340">

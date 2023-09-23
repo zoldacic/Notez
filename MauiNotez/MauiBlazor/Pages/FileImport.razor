@@ -11,6 +11,8 @@
 @using System.Data;
 @using TodoSQLite.Data;
 
+<Navigation />
+
 <h2>File import</h2>
 
 <div style="padding-bottom: 10px">
@@ -112,24 +114,24 @@
                 IApplication application = excelEngine.Excel;
                 application.DefaultVersion = ExcelVersion.Excel2016;
 
-                //create new filestream into above path
+                // Create new filestream into above path
                 var openFileStream = File.Create(path);
 
-                //write the uploaded memorystream to file stream
+                // Write the uploaded memorystream to file stream
                 await file.File.OpenReadStream().CopyToAsync(openFileStream);
                 openFileStream.Close();
 
-                //again open the filstream from that path
+                // Again open the filstream from that path
                 var fileStream = File.OpenRead(path);
 
-                //access the workbook from that filtestream
+                // Access the workbook from that filtestream
                 var workbook = application.Workbooks.Open(fileStream);
                 IWorksheet worksheet = workbook.Worksheets[0];
 
-                //get datatable from workbook
+                // Get datatable from workbook
                 var table = worksheet.ExportDataTable(worksheet.UsedRange, ExcelExportDataTableOptions.ColumnNames);
 
-                //convert to dynamic list and append to Grid.
+                // Convert to dynamic list and append to Grid.
                 GenerateImportItemsFromFile(table);
 
                 StateHasChanged();

@@ -9,8 +9,8 @@
 
 <SfCard>
     <CardContent>
-        <SfDatePicker TValue="DateTime?" Placeholder="From date" CssClass="e-outline" @bind-value="fromDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
-        <SfDatePicker TValue="DateTime?" Placeholder="To date" CssClass="e-outline" @bind-value="toDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
+        <SfDatePicker TValue="DateTime?" Format="yyyy-MM-dd" OnChange="OnChangeStartDate" Placeholder="From date" CssClass="e-outline" @bind-value="fromDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>0
+        <SfDatePicker TValue="DateTime?" Format="yyyy-MM-dd" Placeholder="To date" CssClass="e-outline" @bind-value="toDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
 
         <TagSelection @ref="tagSelectionRef" item="null" />
 
@@ -28,6 +28,11 @@
 </SfChart>
 
 @code {
+
+    void OnChangeStartDate(Microsoft.AspNetCore.Components.ChangeEventArgs args)
+    {
+        var a = args.Value;
+    }
 
     class ChartItem
     {
@@ -63,7 +68,7 @@
         var itemTagRepo = new ItemTagRepository();
         var itemTags = (await itemTagRepo.GetItemTagsAsync()).Where(it => selectedTagIds.Any(t => t == it.TagId)).ToList();
 
-        var itemIds = itemTags.Select(it => it.ItemId).ToList();
+        var itemIdWithCorrectTags = itemTags.Select(it => it.ItemId).ToList();
 
         var itemRepo = new TodoItemRepository();
         var items = await itemRepo.GetItemsAsync();
@@ -71,9 +76,14 @@
         selectedItems.Clear();
         selectedItems.AddRange(items
             .Where(i => 
-                (fromDate == null || i.AssignedDate >= fromDate) && 
-                (toDate == null || i.AssignedDate <= toDate) && 
-                itemIds.Any(ii => ii == i.ID))
+                // An amount must be set
+                i.TransactionAmount.HasValue &&
+
+                // Date must be in search date range
+                (fromDate == null || i.AssignedDate >= fromDate) && (toDate == null || i.AssignedDate <= toDate) && 
+
+                // Must have at least one of selected tags
+                itemIdWithCorrectTags.Any(ii => ii == i.ID))
             .Select(i => new ChartItem() { DateTime = i.AssignedDate.Value, Value = i.TransactionAmount.Value })
             .OrderBy(c => c.DateTime));
     }
