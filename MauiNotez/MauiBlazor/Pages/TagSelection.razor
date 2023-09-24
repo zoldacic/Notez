@@ -14,6 +14,7 @@
             }                    
         </ChipItems>
     </SfChip>
+
 </div>
 
 @code {
@@ -31,6 +32,8 @@
     private SfChip chipsRef;
     private List<ChipItem> chips = new List<ChipItem>();
     private ChipItem chip { set { chips.Add(value); } }
+
+
 
     public List<Tag> GetSelectedTags()
     {

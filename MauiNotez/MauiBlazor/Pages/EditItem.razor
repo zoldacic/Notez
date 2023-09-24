@@ -6,14 +6,27 @@
 @using Syncfusion.Blazor.Popups
 @using Syncfusion.Blazor.Inputs
 
-<SfDialog Width="250px" IsModal="true" Visible="true">
+<SfDialog Width="300px" IsModal="true" Visible="true">
     <DialogTemplates>
         <Content> 
             <SfTextBox @bind-Value="@Item.Name" CssClass="e-outline" Placeholder="Name" FloatLabelType="@FloatLabelType.Always"></SfTextBox>
 
             <TagSelection @ref="tagSelectionRef" item="@Item" />
 
-            <SfTextBox @bind-Value="@Item.Notes" Placeholder="Notes" Multiline=true CssClass="e-outline" FloatLabelType="@FloatLabelType.Always"></SfTextBox>
+            <div style="width:100%; margin-bottom:10px;white-space: nowrap; display: inline-block;">
+                <span style="width: 70%; display: inline-block;">
+                    <SfTextBox TValue="string?" Placeholder="New tag" @bind-Value="newTagName" CssClass="e-outline" FloatLabelType="@FloatLabelType.Always"></SfTextBox>
+                </span>
+                
+                <span style="width: 30%; display: inline-block;">
+                    <SfButton style="width:100%"  Content="Add" IconCss="e-icons" OnClick="@(x => OnAddNewTag(x))"></SfButton>
+                </span>
+            </div>
+
+            <div style="margin-bottom:10px">
+                    <SfTextBox @bind-Value="@Item.Notes" Placeholder="Notes" Multiline=true CssClass="e-outline" FloatLabelType="@FloatLabelType.Always"></SfTextBox>
+            </div>
+
             <div style="margin-bottom:10px">
                 <SfDatePicker TValue="DateTime?" Placeholder="Assigned date" CssClass="e-outline" @bind-Value="assignedDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
             </div>
@@ -29,6 +42,8 @@
 
 @code {
 
+    private string? newTagName;
+
     [Parameter]
     public TodoItem? Item { get; set; }
 
@@ -41,7 +56,20 @@
     private TagSelection tagSelectionRef;
 
     private string transactionAmount;
-    private DateTime? assignedDate;    
+    private DateTime? assignedDate;  
+
+    private async Task OnAddNewTag(MouseEventArgs args)
+    {
+        var tag = new Tag()
+        {
+            Text = newTagName
+        };
+
+        var repo = new TagRepository();
+        await repo.SaveTagAsync(tag);
+
+        StateHasChanged();
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -80,3 +108,4 @@
         await OnItemSaveCancelled.InvokeAsync();
     } 
 }
+

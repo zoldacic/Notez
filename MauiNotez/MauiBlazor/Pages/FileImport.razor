@@ -64,7 +64,7 @@
 }
 
 
-<SfToast NewestOnTop=true ID="toast_default" @ref="toaster" Title="Import" Content="@toastContent" Timeout="5000">
+<SfToast ID="toast_default" NewestOnTop=true @ref="toaster" Title="Import" Content="@toastContent" Timeout="5000">
     <ToastPosition X="Center" Y="Top"></ToastPosition>
 </SfToast>
 
@@ -129,9 +129,9 @@
                 // Convert to dynamic list and append to Grid.
                 GenerateImportItemsFromFile(table);
 
-                StateHasChanged();
-
                 toastContent = $"Added {importItems.Count()} excel items";
+
+                StateHasChanged();
                 await toaster.ShowAsync();
             }
             catch (Exception ex)
@@ -198,9 +198,9 @@
         items = await itemRepo.GetTemporaryItemsAsync();
 
         toastContent = $"Added {items.Count} daily items";
-        await toaster.ShowAsync();
 
         StateHasChanged();
+        await toaster.ShowAsync();
     }
 
     private async Task Import(MouseEventArgs args)
