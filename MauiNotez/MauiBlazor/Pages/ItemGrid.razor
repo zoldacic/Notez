@@ -116,7 +116,7 @@
     private EditItem editDialog;
     private DeleteItem deleteDialog;
 
-    private void OnAfterRender(bool firstRender)
+    protected override void OnAfterRender(bool firstRender)
     {
         grid.AllowPaging = !DisablePaging;
     }
@@ -136,7 +136,7 @@
     private async Task OnEditDialogSubmit()
     {
         hasSelectedItemForEdit = false;
-        await grid.RefreshColumnsAsync();
+        await grid.Refresh();
 
         StateHasChanged();
     }
@@ -146,12 +146,12 @@
         hasSelectedItemForEdit = false;
     }
 
-    private void OnDeleteDialogSubmit()
+    private async Task OnDeleteDialogSubmit()
     {
         hasSelectedItemForEdit = false;
         StateHasChanged();
 
-        grid.Refresh();
+        await grid.Refresh();
     }
 
     private void OnDeleteDialogCancel()

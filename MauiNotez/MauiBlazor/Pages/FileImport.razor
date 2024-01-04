@@ -208,10 +208,13 @@
         var repo = new TodoItemRepository();
         await repo.SetTemporaryItemsPermanentAsync();
 
+        toastContent = $"Saved {items.Count} daily items";
+
         importItems.Clear();
         items.Clear();
 
         StateHasChanged();
+        await toaster.ShowAsync();
     }
 
     private void OpenEditDialog(MouseEventArgs args, TodoItem item)
