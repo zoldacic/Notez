@@ -18,29 +18,53 @@
 
 <hr />
 
-<h2>Filter</h2>
+<div class="outer-div">
+    <div class="inner-div">
+        <div class="content-div">
+            <h2 style="padding-left:10px;">Filter</h2>
 
-<div style="padding-bottom: 10px">
-    <SfCard>
+            <div style="padding-bottom: 10px">
+                <SfCard>
 
-        <TagSelection @ref="tagSelectionRef" item="null" OnTagSelectionChanged="OnFilterChange" />
+                    <TagSelection @ref="tagSelectionRef" item="null" OnTagSelectionChanged="OnFilterChange" />
 
-        <SfTextBox TValue="string?" Placeholder="Text" Input="@OnTextFilterChange" CssClass="e-outline" FloatLabelType="@FloatLabelType.Always"></SfTextBox>
+                    <SfTextBox TValue="string?" Placeholder="Text" Input="@OnTextFilterChange" CssClass="e-outline" FloatLabelType="@FloatLabelType.Always"></SfTextBox>
 
-        <SfDatePicker TValue="DateTime?" OnChange="@(() => OnFilterChange())" Placeholder="Date from" CssClass="e-outline" @bind-value="fromDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
-        <SfDatePicker TValue="DateTime?" OnChange="@(() => OnFilterChange())" Placeholder="Date to" CssClass="e-outline" @bind-value="toDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
+                    <SfDatePicker TValue="DateTime?" OnChange="@(() => OnFilterChange())" Placeholder="Date from" CssClass="e-outline" @bind-value="fromDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
+                    <SfDatePicker TValue="DateTime?" OnChange="@(() => OnFilterChange())" Placeholder="Date to" CssClass="e-outline" @bind-value="toDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
 
-        <SfDropDownList TValue="string" TItem="DisplayType" Placeholder="Type of display"></SfDropDownList>
+                </SfCard>
+            </div>
 
-    </SfCard>
+        </div>
+    </div>
+    
+    <br />
+
+    <div class="inner-div">
+        <div class="content-div">
+
+            <h2 style="padding-left:10px;"> Search Result</h2>
+
+            <SfCard>
+                <ItemGrid @ref="itemGridRef" Items="filteredItems"></ItemGrid>
+            </SfCard>
+
+        </div>
+    </div>
 </div>
 
-<h2>Search Result</h2>
+<style>
+    .outer-div {
+        height: 100%;
+    }
 
-<SfCard>
-    <ItemGrid @ref="itemGridRef" Items="filteredItems"></ItemGrid>
-</SfCard>
- 
+    .content-div {
+        padding-top: 10px;
+    }
+</style>
+
+
 @code {
     private TagSelection tagSelectionRef;
 
@@ -88,7 +112,7 @@
         {
             var itemTags = allItemTags.Where(it => tagSelectionRef.GetSelectedTags().Any(st => st.ID == it.TagId));
             filteredItems = filteredItems.Where(i => itemTags.Any(it => it.ItemId == i.ID));
-        }   
+        }
 
         if (fromDate != null)
         {
@@ -107,7 +131,7 @@
 
         StateHasChanged();
     }
-    
+
     protected override async Task OnInitializedAsync()
     {
         await LoadItems();
@@ -127,5 +151,5 @@
         allItemTags = await itemTagRepo.GetItemTagsAsync();
     }
 
-    
+
 }

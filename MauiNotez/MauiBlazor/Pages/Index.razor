@@ -10,35 +10,25 @@
 
 <h2>Dashboard</h2>
 
- <SfDashboardLayout Columns="6" CellSpacing="@(new double[]{ 10 ,10 })">
-    <DashboardLayoutPanels>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
 
-        <DashboardLayoutPanel Id="DaylysPanel" SizeX="4" SizeY="2" >
-            <HeaderTemplate>    
-                <p style="text-align:left;">
-                    5 latest dailys      
-                </p>
-            </HeaderTemplate>
-            <ContentTemplate>
-                <div>
+<body>
+    <div class="outer-div">
+        <div class="inner-div">
+            <div class="content-div">
                 <ItemGrid Items="items" DisablePaging="true" ShowSimplified="true"></ItemGrid>
-                </div>
-            </ContentTemplate>
-        </DashboardLayoutPanel>
+            </div>
+        </div>
+    </div>
 
-        <DashboardLayoutPanel Id="Panel2" SizeX="2" SizeY="2">
-                <HeaderTemplate><div>Search Result</div></HeaderTemplate>
-                <ContentTemplate>
-                    <NavLink href="/daylies">Daaaaaaaaaaaaaylys</NavLink>
-                </ContentTemplate>
-        </DashboardLayoutPanel>
 
-    </DashboardLayoutPanels>
-    </SfDashboardLayout>
-
-<style>
-    
-</style>
+</body>
+</html>
 
 @code {
     private List<TodoItem> items; 

@@ -22,7 +22,7 @@
     <ChartPrimaryXAxis IntervalType="IntervalType.Days" ValueType="Syncfusion.Blazor.Charts.ValueType.DateTime"></ChartPrimaryXAxis>
     <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
     <ChartSeriesCollection>
-        <ChartSeries DataSource="@selectedItems" XName="@nameof(ChartItem.DateTime)" YName="@nameof(ChartItem.Value)" Type="ChartSeriesType.Line">
+        <ChartSeries DataSource="@selectedItems" XName="@nameof(ChartItem.DateTime)" YName="@nameof(ChartItem.Value)" Type="ChartSeriesType.Area">
             <ChartMarker Visible="true" Height="10" Width="10"></ChartMarker>
         </ChartSeries>
     </ChartSeriesCollection>
