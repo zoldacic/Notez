@@ -1,0 +1,156 @@
+@page "/daylies"
+
+@using MauiBlazor.Data;
+@using MauiBlazor.Models;
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Layouts
+@using TodoSQLite.Data;
+@using System.Net.Http.Json
+@using Syncfusion.Blazor.Buttons;
+@using Syncfusion.Blazor.Cards;
+@using Syncfusion.Blazor.Popups;
+@using Syncfusion.Blazor.Grids;
+@using Syncfusion.Blazor.Calendars;
+
+<Navigation />
+
+<h2>Dailys</h2>
+
+<hr />
+
+<div class="outer-div">
+    <div class="inner-div">
+        <div class="content-div">
+            <h2 style="padding-left:10px;">Filter</h2>
+
+            <div style="padding-bottom: 10px">
+                <SfCard>
+
+                    <TagSelection @ref="tagSelectionRef" item="null" OnTagSelectionChanged="OnFilterChange" />
+
+                    <SfTextBox TValue="string?" Placeholder="Text" Input="@OnTextFilterChange" CssClass="e-outline" FloatLabelType="@FloatLabelType.Always"></SfTextBox>
+
+                    <SfDatePicker TValue="DateTime?" OnChange="@(() => OnFilterChange())" Placeholder="Date from" CssClass="e-outline" @bind-value="fromDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
+                    <SfDatePicker TValue="DateTime?" OnChange="@(() => OnFilterChange())" Placeholder="Date to" CssClass="e-outline" @bind-value="toDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
+
+                </SfCard>
+            </div>
+
+        </div>
+    </div>
+    
+    <br />
+
+    <div class="inner-div">
+        <div class="content-div">
+
+            <h2 style="padding-left:10px;"> Search Result</h2>
+
+            <SfCard>
+                <ItemGrid @ref="itemGridRef" Items="filteredItems"></ItemGrid>
+            </SfCard>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .outer-div {
+        height: 100%;
+    }
+
+    .content-div {
+        padding-top: 10px;
+    }
+</style>
+
+
+@code {
+    private TagSelection tagSelectionRef;
+
+    private ItemGrid itemGridRef;
+
+    public IEnumerable<TodoItem> items;
+    public IEnumerable<TodoItem> filteredItems;
+
+    private List<Tag> allTags;
+    private List<ItemTag> allItemTags;
+
+    private DateTime? fromDate;
+    private DateTime? toDate;
+
+    private string? searchText;
+
+    public class DisplayType
+    {
+        public int ID { get; set; }
+        public string Text { get; set; }
+    }
+
+    private List<DisplayType> DisplayTypes = new List<DisplayType>()
+    {
+        new DisplayType() { ID = 1, Text = "Card" },
+        new DisplayType() { ID = 2, Text = "List" },
+    };
+
+    protected void OnTextFilterChange(InputEventArgs args)
+    {
+        searchText = args.Value;
+        FilterItems();
+    }
+
+    protected void OnFilterChange()
+    {
+        FilterItems();
+    }
+
+    private void FilterItems()
+    {
+        filteredItems = items;
+
+        if (tagSelectionRef.GetSelectedTags().Any())
+        {
+            var itemTags = allItemTags.Where(it => tagSelectionRef.GetSelectedTags().Any(st => st.ID == it.TagId));
+            filteredItems = filteredItems.Where(i => itemTags.Any(it => it.ItemId == i.ID));
+        }
+
+        if (fromDate != null)
+        {
+            filteredItems = filteredItems.Where(i => i.AssignedDate is not null && i.AssignedDate >= fromDate);
+        }
+
+        if (toDate != null)
+        {
+            filteredItems = filteredItems.Where(i => i.AssignedDate is not null && i.AssignedDate <= toDate);
+        }
+
+        if (!string.IsNullOrWhiteSpace(searchText))
+        {
+            filteredItems = filteredItems.Where(i => (i.Name != null && i.Name.Contains(searchText, StringComparison.CurrentCultureIgnoreCase)) || (i.Notes != null && i.Notes.Contains(searchText, StringComparison.CurrentCultureIgnoreCase))).ToList();
+        }
+
+        StateHasChanged();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadItems();
+    }
+
+    protected async Task LoadItems()
+    {
+        var repo = new TodoItemRepository();
+        await repo.Init();
+        items = await repo.GetItemsAsync();
+        filteredItems = items;
+
+        var tagRepo = new TagRepository();
+        allTags = await tagRepo.GetTagsAsync();
+
+        var itemTagRepo = new ItemTagRepository();
+        allItemTags = await itemTagRepo.GetItemTagsAsync();
+    }
+
+
+}

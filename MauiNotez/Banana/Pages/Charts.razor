@@ -1,0 +1,97 @@
+﻿@page "/charts"
+@using MauiBlazor.Data;
+@using MauiBlazor.Models;
+@using Syncfusion.Blazor.Buttons;
+@using TodoSQLite.Data;
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Charts
+
+<SfCard>
+    <CardContent>
+        <SfDatePicker TValue="DateTime?" Format="yyyy-MM-dd" Placeholder="From date" CssClass="e-outline" @bind-value="fromDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
+        <SfDatePicker TValue="DateTime?" Format="yyyy-MM-dd" Placeholder="To date" CssClass="e-outline" @bind-value="toDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
+
+        <TagSelection @ref="tagSelectionRef" item="null" />
+
+        <SfButton Content="Create graph" IsPrimary="true" OnClick="CreateChartAsync" />
+    </CardContent>
+</SfCard>
+
+<SfChart SelectionMode="SelectionMode.Point">
+    <ChartPrimaryXAxis IntervalType="IntervalType.Days" ValueType="Syncfusion.Blazor.Charts.ValueType.DateTime"></ChartPrimaryXAxis>
+    <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
+    <ChartSeriesCollection>
+        <ChartSeries DataSource="@selectedItems" XName="@nameof(ChartItem.DateTime)" YName="@nameof(ChartItem.Value)" Type="ChartSeriesType.Area">
+            <ChartMarker Visible="true" Height="10" Width="10"></ChartMarker>
+        </ChartSeries>
+    </ChartSeriesCollection>
+</SfChart>
+
+<br/>
+
+<ItemGrid ShowSimplified=true Items="items"></ItemGrid>
+
+<br />
+
+@code {
+
+    private List<TodoItem> items;
+
+    class ChartItem
+    {
+        public DateTime DateTime { get; set; }
+        public double Value { get; set; }
+    }
+
+    private TagSelection tagSelectionRef;
+
+    private List<Tag> tags;
+
+    private List<ChipItem> chips = new List<ChipItem>();
+    private ChipItem chip { set { chips.Add(value); } }
+
+    private DateTime? fromDate;
+    private DateTime? toDate;
+
+    private List<ChartItem> selectedItems = new List<ChartItem>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var tagRepo = new TagRepository();
+        tags = await tagRepo.GetTagsAsync();
+
+        await base.OnInitializedAsync();
+    }
+
+    protected async Task CreateChartAsync()
+    {
+        var selectedTags = tagSelectionRef.GetSelectedTags();
+        var selectedTagIds = selectedTags.Any() ? selectedTags.Select(t => t.ID).ToList() : new List<int>();
+
+        var itemTagRepo = new ItemTagRepository();
+        var itemTags = (await itemTagRepo.GetItemTagsAsync()).Where(it => selectedTagIds.Any(t => t == it.TagId)).ToList();
+
+        var itemIdWithCorrectTags = itemTags.Select(it => it.ItemId).ToList();
+
+        var itemRepo = new TodoItemRepository();
+        items = (await itemRepo.GetItemsAsync()).
+            Where(i =>
+                // An amount must be set
+                i.TransactionAmount.HasValue &&
+
+                // Date must be in search date range
+                (fromDate == null || i.AssignedDate >= fromDate) && (toDate == null || i.AssignedDate <= toDate) &&
+
+                // Must have at least one of selected tags
+                itemIdWithCorrectTags.Any(ii => ii == i.ID))
+            .OrderBy(i => i.AssignedDate)
+            .ToList();
+
+        selectedItems.Clear();
+        selectedItems.AddRange(items            
+            .Select(i => new ChartItem() { DateTime = i.AssignedDate.Value, Value = i.TransactionAmount.Value })
+            .OrderBy(c => c.DateTime));
+    }
+}
+ 

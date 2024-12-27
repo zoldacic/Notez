@@ -3,7 +3,7 @@
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-namespace MauiBlazor.WinUI
+namespace Banana.WinUI
 {
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
@@ -16,11 +16,10 @@ namespace MauiBlazor.WinUI
         /// </summary>
         public App()
         {
-            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NHaF5cWWdCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdnWH1cdnRTRWVdVkFzXUs=");
-
             this.InitializeComponent();
         }
 
         protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
     }
+
 }

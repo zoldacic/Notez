@@ -1,0 +1,110 @@
+﻿@using MauiBlazor.Data;
+@using MauiBlazor.Models;
+@using Syncfusion.Blazor.Buttons;
+            
+<div style="margin-bottom:7px">
+    <SfChip @ref="chipsRef" Selection="SelectionType.Multiple" CssClass="e-outline" Enabled=!ShowOnlySelected SelectedChipsChanged="SelectedChipsChanged">
+        <ChipItems>
+            @if (tags != null)
+            {
+                @foreach (var tag in tags)
+                {
+                    <ChipItem @ref="chip" Text="@tag.Text" Value="@tag.Text"></ChipItem>
+                }
+            }                    
+        </ChipItems>
+    </SfChip>
+
+</div>
+
+@code {
+    [Parameter]
+    public TodoItem? item { get; set; }
+
+    [Parameter]
+    public bool ShowOnlySelected { get; set; }
+
+    [Parameter]
+    public EventCallback OnTagSelectionChanged { get; set; }
+
+    private List<Tag> tags;
+
+    private SfChip chipsRef;
+    private List<ChipItem> chips = new List<ChipItem>();
+    private ChipItem chip { set { chips.Add(value); } }
+
+
+
+    public List<Tag> GetSelectedTags()
+    {
+        var selectedChips = chipsRef.GetSelectedChips().Select(c => c.Value).ToArray();
+
+        var selectedTags = tags.Where(t => selectedChips.Any(s => s == t.Text)).ToList();
+        return selectedTags;
+    }
+
+    protected async Task SelectedChipsChanged()
+    {
+        await OnTagSelectionChanged.InvokeAsync();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var tagRepo = new TagRepository();
+        tags = await tagRepo.GetTagsAsync();
+
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (item != null)
+        {
+            if (firstRender)
+            {
+                await SetSelectedTagsAsync();
+
+                StateHasChanged();
+            }
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    public async Task SetSelectedTagsAsync()
+    {
+        var itemTagsRepo = new ItemTagRepository();
+
+        var itemTags = await itemTagsRepo.GetItemTagsForItemAsync(item.ID);
+
+        var selectedMudChips = new List<ChipItem>();
+        foreach (var itemTag in itemTags)
+        {
+            var tag = tags.FirstOrDefault(t => t.ID == itemTag.TagId);
+
+            if (tag is null)
+            {
+                // This ItemTag should not exist - Delete it
+                await itemTagsRepo.DeleteItemTagAsync(itemTag);
+            }
+            else
+            {
+                var mudChip = chips.FirstOrDefault(m => m.Text == tag.Text);
+                selectedMudChips.Add(mudChip);
+            }
+        }
+
+        if (ShowOnlySelected)
+        {
+            if (chipsRef.Chips != null)
+            {
+                var chipsToRemove = chipsRef.Chips.Where(c => !selectedMudChips.Any(sc => sc.Text == c.Text));
+                chipsRef.RemoveChips(chipsToRemove.Select(c => c.Text).ToArray());
+            }
+        }
+        else
+        {
+            chipsRef.SelectChips(selectedMudChips.Select(s => s.Text).ToArray());
+        }
+    }
+}

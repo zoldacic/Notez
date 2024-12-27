@@ -1,0 +1,162 @@
+﻿@using MauiBlazor.Models;
+@using Microsoft.AspNetCore.Components.Web
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Grids
+
+@if (!ShowSimplified && Items != null && Items.Count() > 5)
+{
+    <SfButton Content="Add" IconCss="e-icons e-chevron-down-fill" OnClick="@(x => OpenEditDialog(x, null))"></SfButton>
+}
+
+<SfGrid @ref="grid" DataSource="@Items" AllowTextWrap="true" AllowSorting="true" AllowMultiSorting="true">
+        <GridColumns>
+            <GridColumn Field="Text" HeaderText="Name" Width="340">
+                <Template>
+                    @{
+                        var item = (context as TodoItem);
+
+                    <p style="text-align:left;">
+                        <i>@item.Name</i>
+                        <span style="float:right;">
+                            <i>@item.AssignedDate.Value.ToString("yyyy-MM-dd")</i>
+                        </span>
+                    </p>
+
+                    <div>
+                    @{
+                        if (item.Notes != null)
+                        {
+                                var text = item.Notes.Replace("\n", "<br />");
+                                <p>@text</p>
+                        } 
+                    }
+                        
+                    </div>
+                    }
+                </Template>
+            </GridColumn>
+            <GridColumn HeaderText="Tags" HideAtMedia="(min-width: 700px)" Width="150">
+                <Template>
+                    @{
+                        var item = (context as TodoItem);
+                        <TagSelection item="item" ShowOnlySelected=true></TagSelection>
+                    }
+                </Template>
+            </GridColumn>
+            @* <GridColumn Field="@nameof(TodoItem.AssignedDate)" HideAtMedia="(min-width: 700px)" HeaderText="Assigned Date" Width="190"></GridColumn> *@
+
+            @if (!ShowSimplified)
+            {
+                <GridColumn HeaderText="" Width="140">
+                    <Template>
+                        @{
+                            var item = (context as TodoItem);
+                            <div class="image">
+                                <SfButton Content="Edit" OnClick="@(x => OpenEditDialog(x, item))"></SfButton>
+                                <SfButton Content="Delete" OnClick="@(x => OpenDeleteDialog(x, item))"></SfButton>
+                            </div>
+                        }
+                    </Template>
+                </GridColumn>
+            }
+        </GridColumns>
+    </SfGrid>
+
+@if (!ShowSimplified && HasAddButton)
+{
+    <SfButton Content="Add" IconCss="e-icons e-chevron-down-fill" OnClick="@(x => OpenEditDialog(x, null))"></SfButton>
+} 
+
+@if (hasSelectedItemForEdit)
+{
+    <EditItem @ref="editDialog"
+              Item="selectedItem"
+              OnItemSaved="@(() => OnEditDialogSubmit())"
+              OnItemSaveCancelled="@(() => OnEditDialogCancel())">
+    </EditItem>
+}
+
+@if (hasSelectedItemForDelete)
+{
+    <DeleteItem @ref="deleteDialog"
+                Item="selectedItem"
+                OnItemSaved="@(() => OnDeleteDialogSubmit())"
+                OnItemSaveCancelled="@(() => OnDeleteDialogCancel())">
+    </DeleteItem>
+}
+
+<style>
+  
+
+</style>
+
+@code {
+
+    [Parameter]
+    public IEnumerable<TodoItem> Items { get; set; }
+
+    [Parameter]
+    public bool ShowSimplified { get; set; }
+
+    [Parameter]
+    public bool HasAddButton { get; set; } = true;
+
+    [Parameter]
+    public bool DisablePaging { get; set; }
+
+    // [Parameter]
+    // public int MaxItems { get; set; }
+
+    private SfGrid<TodoItem> grid;
+
+    private TodoItem selectedItem;
+
+    private bool hasSelectedItemForEdit = false;
+    private bool hasSelectedItemForDelete = false;
+
+    private EditItem editDialog;
+    private DeleteItem deleteDialog;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        grid.AllowPaging = !DisablePaging;
+    }
+
+    private void OpenEditDialog(MouseEventArgs args, TodoItem item)
+    {
+        selectedItem = item;
+        hasSelectedItemForEdit = true;
+    }
+
+    private void OpenDeleteDialog(MouseEventArgs args, TodoItem item)
+    {
+        selectedItem = item;
+        hasSelectedItemForDelete = true;
+    }
+
+    private async Task OnEditDialogSubmit()
+    {
+        hasSelectedItemForEdit = false;
+        await grid.Refresh();
+
+        StateHasChanged();
+    }
+
+    private void OnEditDialogCancel()
+    {
+        hasSelectedItemForEdit = false;
+    }
+
+    private async Task OnDeleteDialogSubmit()
+    {
+        hasSelectedItemForEdit = false;
+        StateHasChanged();
+
+        await grid.Refresh();
+    }
+
+    private void OnDeleteDialogCancel()
+    {
+        hasSelectedItemForEdit = false;
+    }
+}

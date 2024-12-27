@@ -1,0 +1,47 @@
+﻿@page "/"
+@using MauiBlazor.Models;
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Layouts;
+@using TodoSQLite.Data;
+
+@inject NavigationManager NavigationManager
+
+<Navigation />
+
+<h2>Dashboard</h2>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <div class="outer-div">
+        <div class="inner-div">
+            <div class="content-div">
+                <ItemGrid Items="items" DisablePaging="true" ShowSimplified="true"></ItemGrid>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html>
+
+@code {
+    private List<TodoItem> items; 
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadItems();
+    }
+
+    protected async Task LoadItems()
+    {
+        var repo = new TodoItemRepository();
+        await repo.Init();
+        items = (await repo.GetItemsAsync()).OrderByDescending(i => i.AssignedDate).Take(3).ToList();
+    }
+}

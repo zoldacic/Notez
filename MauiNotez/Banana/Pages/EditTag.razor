@@ -1,0 +1,53 @@
+﻿@using MauiBlazor.Data;
+@using MauiBlazor.Models;
+@using Syncfusion.Blazor.Inputs;
+@using Syncfusion.Blazor.Popups;
+@using TodoSQLite.Data;
+
+<SfDialog Width="250px" IsModal="true" Visible="true">
+    <DialogTemplates>
+        <Content> 
+            <SfTextBox @bind-Value="@Tag.Text" CssClass="e-outline" Placeholder="Name" FloatLabelType="@FloatLabelType.Always"></SfTextBox>
+
+            <DialogButtons>
+                <DialogButton Content="Save" IsPrimary="true" OnClick="@Submit" />
+                <DialogButton Content="Cancel" OnClick="@Cancel" />
+            </DialogButtons>
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+@code {
+
+    [Parameter]
+    public Tag Tag { get; set; }
+
+    [Parameter]
+    public EventCallback OnTagSaved { get; set; }
+
+    [Parameter]
+    public EventCallback OnTagSaveCancelled { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Tag == null)
+        {
+            Tag = new Tag();
+        }
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task Submit() { 
+
+        var repo = new TagRepository();
+
+        await repo.SaveTagAsync(Tag);
+        await OnTagSaved.InvokeAsync();
+    }
+
+    private async Task Cancel()
+    {
+        await OnTagSaveCancelled.InvokeAsync();
+    }
+}

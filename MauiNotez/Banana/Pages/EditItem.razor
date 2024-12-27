@@ -1,0 +1,112 @@
+﻿@using MauiBlazor.Models;
+@using Microsoft.AspNetCore.Components.Web
+@using TodoSQLite.Data;
+@using MauiBlazor.Data;
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.Inputs
+
+<SfDialog Width="300px" IsModal="true" Visible="true">
+    <DialogTemplates>
+        <Content> 
+            <SfTextBox @bind-Value="@Item.Name" CssClass="e-outline" Placeholder="Name" FloatLabelType="@FloatLabelType.Always"></SfTextBox>
+
+            <TagSelection @ref="tagSelectionRef" item="@Item" />
+
+            <div style="width:100%; margin-bottom:10px;white-space: nowrap; display: inline-block;">
+                <span style="width: 70%; display: inline-block;">
+                    <SfTextBox TValue="string?" Placeholder="New tag" @bind-Value="newTagName" CssClass="e-outline" FloatLabelType="@FloatLabelType.Always"></SfTextBox>
+                </span>
+                
+                <span style="width: 30%; display: inline-block;">
+                    <SfButton style="width:100%"  Content="Add" IconCss="e-icons" OnClick="@(x => OnAddNewTag(x))"></SfButton>
+                </span>
+            </div>
+
+            <div style="margin-bottom:10px">
+                    <SfTextBox @bind-Value="@Item.Notes" Placeholder="Notes" Multiline=true CssClass="e-outline" FloatLabelType="@FloatLabelType.Always"></SfTextBox>
+            </div>
+
+            <div style="margin-bottom:10px">
+                <SfDatePicker TValue="DateTime?" Placeholder="Assigned date" CssClass="e-outline" @bind-Value="assignedDate" FloatLabelType="@FloatLabelType.Always" ShowClearButton="true"></SfDatePicker>
+            </div>
+            <SfTextBox Type="InputType.Number" Placeholder="Transaction amount" @bind-Value="@transactionAmount" CssClass="e-outline" FloatLabelType="@FloatLabelType.Always"></SfTextBox>
+
+            <DialogButtons>
+                <DialogButton Content="Save" IsPrimary="true" OnClick="@Submit" />
+                <DialogButton Content="Cancel" OnClick="@Cancel" />
+            </DialogButtons>
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+@code {
+
+    private string? newTagName;
+
+    [Parameter]
+    public TodoItem? Item { get; set; }
+
+    [Parameter]
+    public EventCallback OnItemSaved { get; set; }
+
+    [Parameter]
+    public EventCallback OnItemSaveCancelled { get; set; }
+
+    private TagSelection tagSelectionRef;
+
+    private string transactionAmount;
+    private DateTime? assignedDate;  
+
+    private async Task OnAddNewTag(MouseEventArgs args)
+    {
+        var tag = new Tag()
+        {
+            Text = newTagName
+        };
+
+        var repo = new TagRepository();
+        await repo.SaveTagAsync(tag);
+
+        StateHasChanged();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Item == null)
+        {
+            Item = new TodoItem();
+        }
+
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            transactionAmount = Item.TransactionAmount.ToString();
+            assignedDate = Item.AssignedDate;
+            StateHasChanged();
+        }
+
+        await base.OnAfterRenderAsync(firstRender);        
+    }
+
+    private async Task Submit() {
+        Item.TransactionAmount = string.IsNullOrEmpty(transactionAmount) ? null : double.Parse(transactionAmount);
+        Item.AssignedDate = assignedDate;
+
+        var repo = new TodoItemRepository();
+        await repo.SaveItemAsync(Item, tagSelectionRef.GetSelectedTags());
+
+        await OnItemSaved.InvokeAsync();
+    }
+
+    private async Task Cancel()
+    {
+        await OnItemSaveCancelled.InvokeAsync();
+    } 
+}
+

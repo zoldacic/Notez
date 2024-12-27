@@ -1,0 +1,110 @@
+﻿@page "/tags"
+
+@using System.Net.Http.Json
+@using MauiBlazor.Data;
+@using MauiBlazor.Models;
+@using Microsoft.AspNetCore.Components.Web
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Grids
+@using TodoSQLite.Data;
+
+<Navigation />
+
+<h2>Tags</h2>
+
+<SfCard>
+<SfGrid DataSource="@tags" AllowTextWrap="true" AllowPaging="true">
+    <GridColumns>
+        <GridColumn Field="@nameof(Tag.Text)" HeaderText="Text" Width="190"></GridColumn>
+        <GridColumn HeaderText="">
+            <Template>
+                @{
+                    var tag = (context as Tag);
+                    <div class="image">
+                        <SfButton Content="Edit" OnClick="@(x => OpenEditDialog(x, tag))"></SfButton>
+                        <SfButton Content="Delete" OnClick="@(x => OpenDeleteDialog(x, tag))"></SfButton>
+                    </div>
+                }
+            </Template>
+        </GridColumn>
+    </GridColumns>
+</SfGrid>
+
+    <SfButton Content="Add" IconCss="e-icons e-chevron-down-fill" OnClick="@(x => OpenEditDialog(x, null))"></SfButton>
+</SfCard>
+
+@if (hasSelectedTagForEdit)
+{
+    <EditTag @ref="editDialog"
+              Tag="selectedTag"
+              OnTagSaved="@(() => OnEditDialogSubmit())"
+              OnTagSaveCancelled="@(() => OnEditDialogCancel())">
+    </EditTag>
+}
+
+@if (hasSelectedTagForDelete)
+{
+    <DeleteTag @ref="deleteDialog"
+                Tag="selectedTag"
+                OnTagSaved="@(() => OnDeleteDialogSubmit())"
+                OnTagSaveCancelled="@(() => OnDeleteDialogCancel())">
+    </DeleteTag>
+}
+
+
+@code {
+
+    private bool hasSelectedTagForEdit = false;
+    private bool hasSelectedTagForDelete = false;
+
+    private EditTag editDialog;
+    private DeleteTag deleteDialog;
+
+    private Tag selectedTag;
+
+    public IEnumerable<Tag> tags;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTagsAsync();
+    }
+
+    protected async Task LoadTagsAsync()
+    {
+        var repo = new TagRepository();
+        tags = await repo.GetTagsAsync();
+    }
+
+    private void OpenEditDialog(MouseEventArgs args, Tag tag)
+    {
+        selectedTag = tag;
+        hasSelectedTagForEdit = true;
+    }
+
+    private void OpenDeleteDialog(MouseEventArgs args, Tag tag)
+    {
+        selectedTag = tag;
+        hasSelectedTagForDelete = true;
+    }
+
+    private void OnEditDialogSubmit()
+    {
+        hasSelectedTagForEdit = false;
+    }
+
+    private void OnEditDialogCancel()
+    {
+        hasSelectedTagForEdit = false;
+    }
+
+    private void OnDeleteDialogSubmit()
+    {
+        hasSelectedTagForEdit = false;
+    }
+
+    private void OnDeleteDialogCancel()
+    {
+        hasSelectedTagForEdit = false;
+    }
+}

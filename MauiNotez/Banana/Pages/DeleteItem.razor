@@ -1,0 +1,43 @@
+﻿@using MauiBlazor.Models;
+@using TodoSQLite.Data;
+@using Syncfusion.Blazor.Popups
+    using MauiBlazor.Models;
+
+<SfDialog Width="250px" IsModal="true" Visible="true">
+    <DialogTemplates>
+        <Content> 
+
+            Do you want to delete Item with name "@Item.Name"?
+
+            <DialogButtons>
+                <DialogButton Content="Save" IsPrimary="true" OnClick="@Submit" />
+                <DialogButton Content="Cancel" OnClick="@Cancel" />
+            </DialogButtons>
+        </Content>
+    </DialogTemplates>
+</SfDialog>
+
+@code {
+    [Parameter] 
+    public TodoItem Item { get; set; } = new TodoItem();
+
+    [Parameter]
+    public EventCallback OnItemDeleted { get; set; }
+
+    [Parameter]
+    public EventCallback OnItemDeleteCancelled { get; set; }
+
+    async Task Submit() { 
+
+        var repo = new TodoItemRepository();
+
+        await repo.DeleteItemAsync(Item);
+
+        await OnItemDeleted.InvokeAsync();
+    }
+    
+    private async Task Cancel()
+    {
+        await OnItemDeleteCancelled.InvokeAsync();
+    }
+}
