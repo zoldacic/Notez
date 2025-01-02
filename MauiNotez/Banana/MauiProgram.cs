@@ -17,8 +17,9 @@ namespace Banana
             builder.Services.AddMauiBlazorWebView();
 
 #if DEBUG
-    		builder.Services.AddBlazorWebViewDeveloperTools();
-    		builder.Logging.AddDebug();
+            builder.Services.AddBlazorWebViewDeveloperTools();
+            builder.Logging.AddDebug();
+            //builder.Logging.AddConsole(); // This line requires the using directive added above          
 #endif
 
             return builder.Build();

@@ -1,0 +1,63 @@
+﻿.e-outline.e-input-group input.e-input,
+.e-outline.e-float-input.e-input-group input,
+.e-outline.e-input-group.e-control-wrapper input.e-input,
+.e-outline.e-float-input.e-input-group.e-control-wrapper input,
+.e-outline.e-float-input input,
+.e-outline.e-float-input.e-control-wrapper input {
+    border: 2px solid #FBBF24;
+    border-radius: 5px;
+    padding: 3px; 10px;
+    width: 100%;
+}
+
+textarea.e-outline.e-input, 
+.e-outline.e-input-group textarea.e-input, 
+.e-outline.e-input-group textarea, 
+.e-outline.e-input-group.e-control-wrapper textarea.e-input, 
+.e-outline.e-input-group.e-control-wrapper textarea, 
+.e-outline.e-float-input textarea.e-input, 
+.e-outline.e-float-input textarea, 
+.e-outline.e-float-input.e-control-wrapper textarea.e-input, 
+.e-outline.e-float-input.e-control-wrapper textarea, 
+.e-outline.e-input-group:not(.e-float-icon-left) textarea.e-input:focus, 
+.e-outline.e-input-group.e-control-wrapper:not(.e-float-icon-left) textarea.e-input:focus {
+    border: 2px solid #FBBF24;
+    border-radius: 5px;
+    padding: 3px;
+    10px;
+    width: 100%;
+    margin: 0px;
+}
+
+.e-outline.e-input-group:not(.e-input-focus), .e-outline.e-input-group:not(.e-success):not(.e-warning):not(.e-error):not(.e-float-icon-left):not(.e-input-focus), .e-outline.e-input-group.e-control-wrapper:not(.e-success):not(.e-warning):not(.e-error):not(.e-float-icon-left):not(.e-input-focus), .e-outline.e-input-group.e-float-icon-left:not(.e-input-focus), .e-outline.e-input-group.e-control-wrapper.e-float-icon-left:not(.e-input-focus),
+.e-outline.e-control-container.e-control-wrapper.e-multi-line-input.e-input-group {
+    border: 2px solid #FBBF24;
+    /*    border-radius: 5px;
+    padding: 3px;
+    10px;
+    width: 100%;
+    margin: 0px;
+}*/
+    /*e-outline e-input-group e-control-container e-control-wrapper {
+    border: 2px solid #FBBF24;
+    border-radius: 5px;
+    padding: 3px; 10px;
+    width: 100%;
+    margin-bottom: 10px;
+}*/
+    .e-datepicker {
+    border: 2px solid #FBBF24;
+    border-radius: 5px;
+    padding: 3px;
+    10px;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.e-control.e-btn.e-lib {
+    background-color: #FBBF24;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+}

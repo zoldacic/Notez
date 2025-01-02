@@ -1,27 +1,52 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">Banana</a>
-    </div>
+﻿@using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.Buttons
+@using Blazor.Extensions;
+@using Blazor.Extensions.Canvas
+@using Blazor.Extensions.Canvas.Canvas2D;
+
+@inject NavigationManager NavigationManager
+
+<div class="e-card e-round-corner">
+    <SfButton Content="Dailies" CssClass="e-round" IsPrimary="false" class="button-menu-item" OnClick="@((MouseEventArgs args) => OnMenuItemSelect("/daylies"))"></SfButton>
+    <SfButton Content="Tags" IsPrimary="false" class="button-menu-item" OnClick="@((MouseEventArgs args) => OnMenuItemSelect("/tags"))"></SfButton>
+    <SfButton Content="Charts" IsPrimary="false" class="button-menu-item" OnClick="@((MouseEventArgs args) => OnMenuItemSelect("/charts"))"></SfButton>
+    <SfButton Content="Import" IsPrimary="false" class="button-menu-item" OnClick="@((MouseEventArgs args) => OnMenuItemSelect("/import"))"></SfButton>
 </div>
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-    </nav>
-</div>
+@code 
+{
+    protected void OnMenuItemSelect(string path)
+    {
+        NavigationManager.NavigateTo(path);
+    }
+}
+
+<style>
+
+    .button-menu-item {
+        height: 100%;
+        width: 100%
+    }
+
+    .semi-circle {
+        width: 100%;
+        height: 10rem;        
+        border-radius: 10rem 10rem 0 0;
+    }
+
+    /* .e-sidebar {
+        background-color: #f8f8f8;
+        color: black;
+    }
+
+    .text-content {
+        font-size: 1.5rem;
+        padding: 3rem;
+    }
+
+    .main > div {
+        padding: 0px !important;
+    } */
+</style>

@@ -1,0 +1,38 @@
+﻿@using Syncfusion.Blazor.Buttons
+
+@inject NavigationManager NavigationManager
+
+<span style="float:right;margin-left:5px;">
+    <SfButton OnClick="OpenDashboard">Dashboard</SfButton>
+    <SfButton OnClick="OpenDailys">Dailys</SfButton>
+    <SfButton OnClick="OpenCharts">Charts</SfButton>
+    <SfButton OnClick="OpenTags">Tags</SfButton>
+    <SfButton OnClick="OpenImport">Import</SfButton>
+</span>
+
+@code {
+    private void OpenDashboard(MouseEventArgs args)
+    {
+        NavigationManager.NavigateTo("/");
+    }
+
+    private void OpenDailys(MouseEventArgs args)
+    {
+        NavigationManager.NavigateTo("/daylies");
+    }
+
+    private void OpenTags(MouseEventArgs args)
+    {
+        NavigationManager.NavigateTo("/tags");
+    }
+
+    private void OpenCharts(MouseEventArgs args)
+    {
+        NavigationManager.NavigateTo("/charts");
+    }
+
+    private void OpenImport(MouseEventArgs args)
+    {
+        NavigationManager.NavigateTo("/import");
+    }
+}

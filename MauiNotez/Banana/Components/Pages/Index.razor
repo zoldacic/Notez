@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using Banana.Components.Layout
 @using MauiBlazor.Models;
 @using Syncfusion.Blazor.Buttons
 @using Syncfusion.Blazor.Layouts;
@@ -6,7 +7,7 @@
 
 @inject NavigationManager NavigationManager
 
-<Navigation />
+@* <Navigation /> *@
 
 <h2>Dashboard</h2>
 
@@ -18,7 +19,7 @@
 </head>
 
 <body>
-    <div class="outer-div">
+    @* <div class="outer-div">
         <div class="inner-div">
             <div class="content-div">
                 <ItemGrid Items="items" DisablePaging="true" ShowSimplified="true"></ItemGrid>
@@ -26,22 +27,22 @@
         </div>
     </div>
 
-
+ *@
 </body>
 </html>
 
 @code {
-    private List<TodoItem> items; 
+    // private List<TodoItem> items; 
 
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadItems();
-    }
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     await LoadItems();
+    // }
 
-    protected async Task LoadItems()
-    {
-        var repo = new TodoItemRepository();
-        await repo.Init();
-        items = (await repo.GetItemsAsync()).OrderByDescending(i => i.AssignedDate).Take(3).ToList();
-    }
+    // protected async Task LoadItems()
+    // {
+    //     var repo = new TodoItemRepository();
+    //     await repo.Init();
+    //     items = (await repo.GetItemsAsync()).OrderByDescending(i => i.AssignedDate).Take(3).ToList();
+    // }
 }

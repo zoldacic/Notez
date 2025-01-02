@@ -61,25 +61,25 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Blazor-ApexCharts" Version="4.0.1" />
+        <PackageReference Include="Blazor-ApexCharts" Version="5.0.0" />
         <PackageReference Include="Blazor.Extensions.Canvas" Version="1.1.1" />
-        <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
+        <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.21" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="9.0.21" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
         <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
         <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.10" />
-        <PackageReference Include="Syncfusion.Blazor.Buttons" Version="28.1.36" />
-        <PackageReference Include="Syncfusion.Blazor.Cards" Version="28.1.36" />
-        <PackageReference Include="Syncfusion.Blazor.Charts" Version="28.1.36" />
-        <PackageReference Include="Syncfusion.Blazor.Core" Version="28.1.36" />
-        <PackageReference Include="Syncfusion.Blazor.Grid" Version="28.1.36" />
-        <PackageReference Include="Syncfusion.Blazor.Inputs" Version="28.1.36" />
-        <PackageReference Include="Syncfusion.Blazor.Layouts" Version="28.1.36" />
-        <PackageReference Include="Syncfusion.Blazor.Lists" Version="28.1.36" />
-        <PackageReference Include="Syncfusion.Blazor.Navigations" Version="28.1.36" />
-        <PackageReference Include="Syncfusion.Blazor.RichTextEditor" Version="28.1.36" />
-        <PackageReference Include="Syncfusion.Blazor.Themes" Version="28.1.36" />
-        <PackageReference Include="Syncfusion.XlsIO.Net.Core" Version="28.1.36" />
+        <PackageReference Include="Syncfusion.Blazor.Buttons" Version="28.1.37" />
+        <PackageReference Include="Syncfusion.Blazor.Cards" Version="28.1.37" />
+        <PackageReference Include="Syncfusion.Blazor.Charts" Version="28.1.37" />
+        <PackageReference Include="Syncfusion.Blazor.Core" Version="28.1.37" />
+        <PackageReference Include="Syncfusion.Blazor.Grid" Version="28.1.37" />
+        <PackageReference Include="Syncfusion.Blazor.Inputs" Version="28.1.37" />
+        <PackageReference Include="Syncfusion.Blazor.Layouts" Version="28.1.37" />
+        <PackageReference Include="Syncfusion.Blazor.Lists" Version="28.1.37" />
+        <PackageReference Include="Syncfusion.Blazor.Navigations" Version="28.1.37" />
+        <PackageReference Include="Syncfusion.Blazor.RichTextEditor" Version="28.1.37" />
+        <PackageReference Include="Syncfusion.Blazor.Themes" Version="28.1.37" />
+        <PackageReference Include="Syncfusion.XlsIO.Net.Core" Version="28.1.37" />
     </ItemGroup>
 
 </Project>
