@@ -1,4 +1,4 @@
-﻿namespace TheBananaStand
+﻿namespace MauiBlazor
 {
     public partial class MainPage : ContentPage
     {

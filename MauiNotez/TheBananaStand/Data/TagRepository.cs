@@ -1,7 +1,7 @@
-﻿using TheBananaStand.Data;
-using TheBananaStand.Models;
+﻿using MauiBlazor.Data;
+using MauiBlazor.Models;
 
-namespace TheBananaStand.Data;
+namespace MauiBlazor.Data;
 
 public class TagRepository
 {

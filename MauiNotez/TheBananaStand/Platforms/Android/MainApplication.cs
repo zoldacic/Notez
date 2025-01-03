@@ -1,7 +1,7 @@
 ﻿using Android.App;
 using Android.Runtime;
 
-namespace TheBananaStand
+namespace MauiBlazor
 {
     [Application]
     public class MainApplication : MauiApplication

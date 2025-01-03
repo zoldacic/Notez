@@ -1,0 +1,96 @@
+﻿@page "/bananas"
+@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor.Cards
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Lists
+@using TheBananaStand2.Data
+@using TheBananaStand2.Models
+
+<div class="control-section">
+    <div class="row">
+        <div style="white-space: nowrap;" class="col-xs-6 col-sm-6 col-lg-6 col-md-6">
+            <SfTextBox TValue="string?" @bind-Value="@Item.Name" Placeholder="Add new banana..." CssClass="e-outline" FloatLabelType="@FloatLabelType.Never"></SfTextBox>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-6 col-sm-6 col-lg-6 col-md-6">
+            <SfTextBox TValue="string?" Placeholder="Notes..." Multiline=true CssClass="e-outline" FloatLabelType="@FloatLabelType.Never"></SfTextBox>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-6 col-sm-6 col-lg-6 col-md-6">
+            <SfTextBox TValue="string?" Placeholder="Add tags (comma separated)" CssClass="e-outline" FloatLabelType="@FloatLabelType.Never"></SfTextBox>
+        </div>
+    </div>
+    <div class="row">
+        <div style="white-space: nowrap;" class="col-xs-6 col-sm-6 col-lg-6 col-md-6">
+            <SfDatePicker TValue="DateTime?" Placeholder="Assigned date" CssClass="e-outline" FloatLabelType="@FloatLabelType.Never" ShowClearButton="true"></SfDatePicker>
+        </div>
+    </div>
+    <div class="row">
+        <div style="white-space: nowrap;" class="col-xs-3 col-sm-3 col-lg-1 col-md-2">
+            <SfTextBox Type="InputType.Number" Placeholder="Transaction amount" CssClass="e-outline" FloatLabelType="@FloatLabelType.Always"></SfTextBox>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-6 col-sm-6 col-lg-6 col-md-6">
+            <SfButton OnClick="@Submit" >+ Add</SfButton>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top: 5px;">
+        <div style="white-space: nowrap;" class="col-xs-12 col-sm-12 col-lg-12 col-md-12">
+            <SfListView DataSource="@Items" CssClass="e-list-template listview-template">
+                <ListViewFieldSettings TValue="TodoItem" Id="Name" Text="Name" Child="Child"></ListViewFieldSettings>
+                <ListViewTemplates TValue="TodoItem">
+                    <Template>
+                        @{
+                        <div class="e-list-wrapper e-list-multiline e-list-avatar">
+                            <span class="e-list-item-header">@((context as TodoItem).Name)</span>
+                            <span class="e-list-item-content">@((context as TodoItem).Notes)</span>
+                        </div>
+                        }
+                    </Template>
+                </ListViewTemplates>    
+            </SfListView>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public TodoItem? Item { get; set; } = new TodoItem();
+
+    [Parameter]
+    public IEnumerable<TodoItem> Items { get; set; }
+
+    [Parameter]
+    public EventCallback OnItemSaved { get; set; }
+
+    private string transactionAmount;
+    private DateTime? assignedDate;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var repo = new TodoItemRepository();
+        Items = await repo.GetItemsAsync();
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task Submit()
+    {
+        Item.TransactionAmount = string.IsNullOrEmpty(transactionAmount) ? null : double.Parse(transactionAmount);
+        Item.AssignedDate = assignedDate;
+
+        var repo = new TodoItemRepository();
+
+        await repo.SaveItemAsync(Item, new List<Tag>());
+        //tagSelectionRef.GetSelectedTags());
+
+        await OnItemSaved.InvokeAsync();
+    }
+}

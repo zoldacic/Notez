@@ -1,6 +1,6 @@
 ﻿using SQLite;
 
-namespace TheBananaStand.Models;
+namespace MauiBlazor.Models;
 
 public class TodoItem
 {

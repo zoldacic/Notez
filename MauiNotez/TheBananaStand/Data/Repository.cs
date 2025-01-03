@@ -1,8 +1,8 @@
 ﻿using SQLite;
-using TheBananaStand.Models;
+using MauiBlazor.Models;
 
 
-namespace TheBananaStand.Data;
+namespace MauiBlazor.Data;
 
 public static class Repository
 {
@@ -36,7 +36,7 @@ public static class FileHelper
         string destinationPath;
 
         // On Android, use the external storage directory
-        destinationPath = "/storage/emulated/0/Documents/TheBananaStand.db";//Path.Combine(FileSystem.AppDataDirectory, Constants.DatabaseFilename);
+        destinationPath = "/storage/emulated/0/Documents/MauiBlazor.db";//Path.Combine(FileSystem.AppDataDirectory, Constants.DatabaseFilename);
 
         if (!File.Exists(destinationPath))
         {

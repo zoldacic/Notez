@@ -1,7 +1,7 @@
 ﻿using ObjCRuntime;
 using UIKit;
 
-namespace TheBananaStand
+namespace MauiBlazor
 {
     public class Program
     {

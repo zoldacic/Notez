@@ -1,10 +1,10 @@
-﻿using TheBananaStand.Data;
-using TheBananaStand.Models;
+﻿using MauiBlazor.Data;
+using MauiBlazor.Models;
 using SQLite;
 using System.Collections.Generic;
 using System.ComponentModel;
-using TheBananaStand.Data;
-using TheBananaStand.Models;
+using MauiBlazor.Data;
+using MauiBlazor.Models;
 
 namespace TodoSQLite.Data;
 public class TodoItemRepository

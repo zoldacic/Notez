@@ -1,6 +1,6 @@
 ﻿using Foundation;
 
-namespace TheBananaStand
+namespace MauiBlazor
 {
     [Register("AppDelegate")]
     public class AppDelegate : MauiUIApplicationDelegate

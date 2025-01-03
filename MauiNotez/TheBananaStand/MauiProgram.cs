@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Syncfusion.Blazor;
 
-namespace TheBananaStand
+namespace MauiBlazor
 {
     public static class MauiProgram
     {

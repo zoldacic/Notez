@@ -1,0 +1,180 @@
+﻿
+
+html, body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-image: none;
+    background-color: #002935; /* Background color set to #002935 for the entire page */
+    margin: 0; /* Remove default margin to ensure full coverage of the background color */
+    color: white;
+}
+
+.outer-div {
+    width: 100%;
+    height: 500px;
+    border: 4px solid black; /* Increased border thickness */
+    background: linear-gradient(to top, #1F1D44, #76819F); /* Darker colors at the bottom */
+    position: relative;
+    padding: 10px; /* Lowered padding */
+    border-radius: 30px; /* Increased border-radius for more rounded corners */
+    box-shadow: inset 0px 3px 0px rgba(255, 255, 255, 0.8);
+}
+
+.inner-div {
+    width: calc(100% - 2px); /* Adjusted width to consider border thickness */
+    height: calc(100% - 2px); /* Adjusted height to consider border thickness */
+    border: 4px solid black; /* Increased border thickness */
+    background: linear-gradient(to top, #11112B, #525872); /* Darker colors at the bottom */
+    box-sizing: border-box;
+    border-radius: 25px; /* Increased border-radius for more rounded corners */
+    padding: 10px; /* Lowered padding for div B */
+    box-shadow: inset 0px 2px 3px rgba(255, 255, 255, 0.8); /* Inset white shadow with slimmer blur */
+}
+
+.content-div {
+    padding: 0px 0px 0px 0px;
+    border: 4px solid black;
+    box-sizing: border-box;
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
+    /* box-shadow: inset 0px 5px 2px rgba(255, 255, 255, 0.8); */
+    box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.8);
+}
+
+.e-grid .e-rowcell:not(.e-editedbatchcell):not(.e-updatedtd), 
+.e-grid .e-detailrowcollapse, 
+.e-grid .e-detailrowexpand, 
+.e-grid .e-gridcontent .e-rowdragdrop, 
+.e-grid .e-gridheader .e-rowdragdrop, 
+.e-grid .e-emptyrow {
+    color: rgba(0,0,0,.87)
+}
+
+/* Dashboard */
+/*.e-dashboardlayout.e-control .e-panel .e-panel-container .e-panel-header {
+    margin: 0px auto 0px 0px;
+    font-size: 1.125rem;
+    line-height: 1.625;
+    font-family: "Plus Jakarta Display", Helvetica, Arial, sans-serif;
+    opacity: 1;
+    text-transform: none;
+    vertical-align: unset;
+    text-decoration: none;
+    color: rgb(255, 255, 255);
+    font-weight: 700;
+    padding-left: 0px;
+    height:  35px;
+}
+
+.e-dashboardlayout.e-control .e-panel {
+    opacity: 1;
+    background: transparent;
+    border: 0px;
+}
+
+.e-dashboardlayout .e-control .e-panel .e-panel-container {
+    color: rgba(0, 0, 0, 0.87);
+    display: flex;
+    flex-direction: column;
+    backdrop-filter: blur(120px);
+    position: relative;
+    min-width: 0px;
+    overflow-wrap: break-word;
+    box-shadow: rgba(0, 0, 0, 0.05) 0rem 1.25rem 1.6875rem 0rem;
+    height: 100%;
+    transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    overflow: hidden;
+    background: linear-gradient(127.09deg, rgba(6, 11, 40, 0.94) 19.41%, rgba(10, 14, 35, 0.49) 76.65%) border-box;
+    padding: 22px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: rgba(20, 24, 95, 0.9);
+    border-image: initial;
+    border-radius: 1.25rem;
+    opacity: 0.8;
+}*/
+
+/* Grid */
+.e-grid .e-content {
+    background-color: transparent;
+}
+
+.e-grid .e-gridcontent {
+    background-color: transparent;
+}
+
+.e-grid .e-table {
+    background-color: transparent;
+    border: none;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.e-grid .e-gridheader {
+    background-color: transparent;
+    border-bottom: 2px solid #002935; /* Add a border between header and rows */
+}
+
+.e-grid e-columnheader {
+    background-color: transparent;
+    color: #002935;
+}
+
+.e-grid th {
+    background-color: transparent;
+    color: #002935;
+    font-weight: bolder;
+}
+
+.e-grid td {
+    background-color: transparent;
+    color: #002935;    
+    border: none;
+}
+
+.e-grid td:first-child {
+    border-top-left-radius: 25px;
+    border-bottom-left-radius: 25px;
+}
+
+.e-grid td:last-child {
+    border-top-right-radius: 25px;
+    border-bottom-right-radius: 25px;
+}
+
+.e-grid tbody {
+    background: linear-gradient(to bottom, #39B8FF, #309CFE); 
+    color: #002935;
+}
+
+.e-grid .e-headercell, .e-grid .e-detailheadercell {
+    background: linear-gradient(to bottom, #FFDB62, #F8C053);
+}
+
+.e-grid th:first-child {
+    border-top-left-radius: 25px;
+    border-bottom-left-radius: 25px;
+    border-width: 20px;
+    border-color: red;
+    border: none;
+}
+
+.e-grid th:last-child {
+    border-top-right-radius: 25px;
+    border-bottom-right-radius: 25px;
+}
+
+
+/* Card */
+.e-card, .e-card:hover {
+    background-color: transparent;
+}
+
+/* Button */
+.e-btn {
+    background-color: rgba(50, 54, 145, 0.9);
+    padding: 5px;
+    margin: 0px;
+    min-width: 25px;
+    border-radius: 5px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}

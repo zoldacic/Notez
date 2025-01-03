@@ -1,4 +1,4 @@
-﻿namespace TheBananaStand;
+﻿namespace MauiBlazor;
 
 public static class Constants
 {
