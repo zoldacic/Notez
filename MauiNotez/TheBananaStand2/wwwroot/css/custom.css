@@ -71,3 +71,37 @@ textarea.e-outline.e-input,
     border: none;
     border-radius: 5px;
 }
+
+
+/*Sample level customization styles*/
+.listview, .listview-group {
+    border: 1px solid #dddddd;
+    border-bottom: 0px;
+    border-radius: 3px;
+}
+
+.fluent .listview, .fluent .listview-group,
+.fluent-dark .listview, .fluent-dark .listview-group {
+    border-bottom: 1px solid #dddddd;
+}
+
+#flat-list,
+#group-list {
+    width: 49%;
+    margin: auto;
+    margin-bottom: 15px;
+}
+
+    #flat-list h4, #group-list h4 {
+        padding-left: 16px;
+    }
+
+#flat-list {
+    float: left;
+    padding-left: 16px;
+}
+
+#group-list {
+    float: right;
+    padding-right: 16px;
+}

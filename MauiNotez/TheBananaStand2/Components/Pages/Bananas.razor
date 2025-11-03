@@ -9,6 +9,16 @@
 @using TheBananaStand2.Models
 
 <div class="control-section">
+    <div id="flat-list">
+        <h4>Flat List</h4>
+    @* Initialization of default ListView component *@
+        <SfListView CssClass="listview" DataSource="@Items" TValue="TodoItem">
+            <ListViewFieldSettings TValue="TodoItem" Id="Name" Text="Name"></ListViewFieldSettings>
+        </SfListView>
+    </div>
+</div>
+
+<div class="control-section">
     <div class="row">
         <div style="white-space: nowrap;" class="col-xs-6 col-sm-6 col-lg-6 col-md-6">
             <SfTextBox TValue="string?" @bind-Value="@Item.Name" Placeholder="Add new banana..." CssClass="e-outline" FloatLabelType="@FloatLabelType.Never"></SfTextBox>
@@ -42,12 +52,17 @@
 
     <div class="row" style="margin-top: 5px;">
         <div style="white-space: nowrap;" class="col-xs-12 col-sm-12 col-lg-12 col-md-12">
-            <SfListView DataSource="@Items" CssClass="e-list-template listview-template">
-                <ListViewFieldSettings TValue="TodoItem" Id="Name" Text="Name" Child="Child"></ListViewFieldSettings>
+            <SfListView DataSource="@Items" SelectionMode="Multiple" SelectionChanged="OnSelectionChanged" CssClass="e-list-template listview-template">
+                <ListViewFieldSettings TValue="TodoItem" Id="Name" Text="Name"></ListViewFieldSettings>
                 <ListViewTemplates TValue="TodoItem">
                     <Template>
                         @{
-                        <div class="e-list-wrapper e-list-multiline e-list-avatar">
+                        <div 
+                            class="e-list-wrapper e-list-multiline e-list-avatar" style="@divStyle"
+                            @onmouseover="ChangeColor"
+                            @onmouseout="ResetColor"
+                            @onclick="() => OnItemClick(context)"
+                        >
                             <span class="e-list-item-header">@((context as TodoItem).Name)</span>
                             <span class="e-list-item-content">@((context as TodoItem).Notes)</span>
                         </div>
@@ -72,6 +87,38 @@
 
     private string transactionAmount;
     private DateTime? assignedDate;
+
+    private string divStyle = "background-color: lightgray; padding: 20px; text-align: center;";
+    private string status = "not hovered";
+
+    // Method triggered on mouseover
+    private void ChangeColor()
+    {
+        divStyle = "background-color: lightblue; padding: 20px; text-align: center;";
+        status = "hovered";
+    }
+
+    // Method triggered on mouseout
+    private void ResetColor()
+    {
+        divStyle = "background-color: lightgray; padding: 20px; text-align: center;";
+        status = "not hovered";
+    }
+
+    private void OnItemClick(TodoItem item)
+    {
+        // Logic to handle the click event
+        Console.WriteLine($"{item.Name} clicked!");
+    }
+
+    private void OnSelectionChanged(SelectionChangedEventArgs args)
+    {
+        // if (args.IsSelected)
+        // {
+            // Get the selected person from the event args
+            var a = args.AddedItems;
+        // }
+    }
 
     protected override async Task OnInitializedAsync()
     {
